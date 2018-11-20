@@ -27,7 +27,7 @@ class User extends Model {
   }
 
   static get hidden () {
-    return ['password', 'confirmation_token']
+    return ['password', 'confirmation_token'];
   }
 }
 

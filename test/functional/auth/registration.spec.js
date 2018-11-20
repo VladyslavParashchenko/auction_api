@@ -27,7 +27,7 @@ test('should create new user and return user data in response', async ({ client,
     .post(Route.url('registration'))
     .query(data)
     .end();
-  response.assertStatus(200)
+  response.assertStatus(200);
   response.assertJSONSubset({
     email: data.email,
     first_name: data.first_name,

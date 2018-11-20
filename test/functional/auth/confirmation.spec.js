@@ -12,7 +12,7 @@ test('should return error', async ({ client }) => {
     .get(Route.url('confirmation'))
     .end();
   response.assertStatus(403);
-  response.assertError( { message: 'User not found'});
+  response.assertError({ message: 'User not found' });
 });
 
 test('should return error', async ({ client }) => {
@@ -28,11 +28,8 @@ test('should return error', async ({ client }) => {
   });
   const response = await client
     .get(Route.url('confirmation'))
-    .query({confirmation_token: token})
+    .query({ confirmation_token: token })
     .end();
   response.assertStatus(200);
   response.assertRedirect(Env.get('CONFIRM_SUCCESS_URL'));
 });
-
-
-
