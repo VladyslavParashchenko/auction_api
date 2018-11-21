@@ -5,13 +5,14 @@ const User = use('App/Models/User');
 const Event = use('Event');
 const Env = use('Env');
 const crypto = require('crypto');
+
 class AuthController {
   async register ({ request, response }) {
     let params = request.only(['email', 'first_name', 'last_name', 'phone', 'birth_day', 'password']);
     params['confirmation_token'] = crypto.randomBytes(24).toString('hex');
     let user = await User.create(params);
     Event.fire('new::user', user);
-    return response.status(200).json(user);
+    return response.json(user);
   }
 
   async confirmation ({ request, response }) {

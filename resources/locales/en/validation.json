@@ -1,0 +1,8 @@
+{
+  "required": "You must provide a {name}.",
+  "email": "{name} is invalid",
+  "unique": "This {name} is already exists.",
+  "confirmed": "{name} have to confirmed",
+  "date": "{name} is invalid",
+  "before_offset_of": "You have to be older than {value}"
+}
