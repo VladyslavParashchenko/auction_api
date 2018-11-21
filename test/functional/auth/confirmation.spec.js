@@ -1,6 +1,6 @@
 'use strict';
 
-const { test, trait } = use('Test/Suite')('Auth-register');
+const { test, trait } = use('Test/Suite')('Auth-confirmation');
 const Route = use('Route');
 const User = use('App/Models/User');
 const Env = use('Env');
@@ -15,7 +15,7 @@ test('should return error', async ({ client }) => {
   response.assertError({ message: 'User not found' });
 });
 
-test('should return error', async ({ client }) => {
+test('should redirect after confirmation', async ({ client }) => {
   const token = '11111111111111111111111111';
   const user = await User.create({
     email: 'test@email.com',

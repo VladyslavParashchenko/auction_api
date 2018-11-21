@@ -1,12 +1,16 @@
 const Antl = use('Antl');
 
 class BaseValidator {
+  get validateAll () {
+    return true;
+  }
+
   get messages () {
     let messages = {};
     let rulesArr, messageName, messageText;
     for (let fieldName in this.rules) {
       rulesArr = this.rules[fieldName].split('|');
-      rulesArr = rulesArr.map(this.clearValidationRule);
+      rulesArr = rulesArr.map(this.parseValidationRule);
       rulesArr.forEach((rule) => {
         messageName = fieldName + '.' + rule.ruleName;
         try {
@@ -20,7 +24,7 @@ class BaseValidator {
     return messages;
   }
 
-  clearValidationRule (rule) {
+  parseValidationRule (rule) {
     if (rule.indexOf(':') === -1) {
       return { ruleName: rule };
     } else {

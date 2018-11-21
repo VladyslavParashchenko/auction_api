@@ -21,7 +21,7 @@ Route.get('/', () => {
 });
 
 Route.group(() => {
-  Route.post('register', 'AuthController.register')
-    .validator('UserRegistration').as('registration');
+  Route.post('register', 'AuthController.register').validator('UserRegistration').as('registration');
   Route.get('confirmation', 'AuthController.confirmation').as('confirmation');
+  Route.post('login', 'AuthController.login').validator('UserLogin').as('login');
 }).prefix('/api/auth');

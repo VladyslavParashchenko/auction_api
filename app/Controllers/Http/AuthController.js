@@ -8,9 +8,9 @@ const crypto = require('crypto');
 
 class AuthController {
   async register ({ request, response }) {
-    let params = request.only(['email', 'first_name', 'last_name', 'phone', 'birth_day', 'password']);
+    const params = request.only(['email', 'first_name', 'last_name', 'phone', 'birth_day', 'password']);
     params['confirmation_token'] = crypto.randomBytes(24).toString('hex');
-    let user = await User.create(params);
+    const user = await User.create(params);
     Event.fire('new::user', user);
     return response.json(user);
   }
@@ -22,6 +22,17 @@ class AuthController {
       user.confirmed_at = new Date();
       await user.save();
       return response.redirect(Env.get('CONFIRM_SUCCESS_URL'));
+    } catch (e) {
+      return response.status(403).json({ message: 'User not found' });
+    }
+  }
+
+  async login ({ request, auth, response }) {
+    try {
+      const { email, password } = request.all();
+      const user = await User.findByOrFail({ email: email, confirmation_token: null });
+      let { token } = await auth.attempt(email, password);
+      response.header('Authorization', `Bearer ${token}`).json(user);
     } catch (e) {
       return response.status(403).json({ message: 'User not found' });
     }
