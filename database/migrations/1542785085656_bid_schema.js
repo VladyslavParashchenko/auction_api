@@ -3,19 +3,21 @@
 /** @type {import('@adonisjs/lucid/src/Schema')} */
 const Schema = use('Schema');
 
-class LotSchema extends Schema {
+class BidSchema extends Schema {
   up () {
-    this.create('lots', (table) => {
+    this.create('bids', (table) => {
       table.increments();
+      table.timestamps();
       table.integer('user_id').unsigned();
       table.foreign('user_id').references('id').inTable('users').onDelete('CASCADE');
-      table.timestamps();
+      table.integer('lot_id').unsigned();
+      table.foreign('lot_id').references('id').inTable('lots');
     });
   }
 
   down () {
-    this.dropIfExists('users');
+    this.drop('bids');
   }
 }
 
-module.exports = LotSchema;
+module.exports = BidSchema;
