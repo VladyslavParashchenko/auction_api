@@ -17,7 +17,7 @@ test('should return error', async ({ client }) => {
 
 test('should redirect after confirmation', async ({ client }) => {
   const token = '11111111111111111111111111';
-  const user = await User.create({
+  await User.create({
     email: 'test@email.com',
     first_name: 'Name',
     last_name: 'LastName',

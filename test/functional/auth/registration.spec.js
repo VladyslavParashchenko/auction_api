@@ -3,6 +3,7 @@ const { test, trait } = use('Test/Suite')('User registration');
 const validateErrorGeneretor = require('../../helper/generateValidatorError.js');
 const Route = use('Route');
 const User = use('App/Models/User');
+const Event = use('Event');
 trait('DatabaseTransactions');
 trait('Test/ApiClient');
 
@@ -74,4 +75,32 @@ test('should create new user and return user data in response', async ({ client 
     last_name: data.last_name,
     phone: data.phone
   });
+});
+
+test('should run event for send email', async ({ client, assert }) => {
+  Event.fake();
+  const data = {
+    email: 'test@email.com',
+    first_name: 'Name',
+    last_name: 'LastName',
+    phone: '+999999999999',
+    password: 'password',
+    password_confirmation: 'password',
+    birth_day: new Date(1990, 1, 1)
+  };
+  const response = await client
+    .post(Route.url('registration'))
+    .accept('json')
+    .send(data)
+    .end();
+  response.assertStatus(200);
+  response.assertJSONSubset({
+    email: data.email,
+    first_name: data.first_name,
+    last_name: data.last_name,
+    phone: data.phone
+  });
+  const recentEvent = Event.pullRecent();
+  assert.equal(recentEvent.event, 'user::new');
+  Event.restore();
 });

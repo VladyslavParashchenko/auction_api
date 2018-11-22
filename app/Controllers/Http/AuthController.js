@@ -1,17 +1,17 @@
 'use strict';
 
-const { validate } = use('Validator');
+const BaseController = use('App/Controllers/Http/BaseController');
 const User = use('App/Models/User');
 const Event = use('Event');
 const Env = use('Env');
-const crypto = require('crypto');
+const Antl = use('Antl');
 
-class AuthController {
+class AuthController extends BaseController {
   async register ({ request, response }) {
     const params = request.only(['email', 'first_name', 'last_name', 'phone', 'birth_day', 'password']);
-    params['confirmation_token'] = crypto.randomBytes(24).toString('hex');
+    params['confirmation_token'] = this.getToken();
     const user = await User.create(params);
-    Event.fire('new::user', user);
+    Event.fire('user::new', user);
     return response.json(user);
   }
 
@@ -23,7 +23,7 @@ class AuthController {
       await user.save();
       return response.redirect(Env.get('CONFIRM_SUCCESS_URL'));
     } catch (e) {
-      return response.status(403).json({ message: 'User not found' });
+      return response.status(403).json({ message: Antl.formatMessage('message.UserNotFound') });
     }
   }
 
@@ -31,10 +31,60 @@ class AuthController {
     try {
       const { email, password } = request.all();
       const user = await User.findByOrFail({ email: email, confirmation_token: null });
-      let { token } = await auth.attempt(email, password);
-      response.header('Authorization', `Bearer ${token}`).json(user);
+      let sd = await auth.withRefreshToken().attempt(email, password);
+      console.log(JSON.stringify(sd));
+      let { token, refreshToken } = sd;
+      console.log(refreshToken);
+      response.header('Authorization', `Bearer ${token}`).header('refreshToken', refreshToken).json(user);
     } catch (e) {
-      return response.status(403).json({ message: 'User not found' });
+      return response.status(403).json({ message: Antl.formatMessage('message.UserNotFound') });
+    }
+  }
+
+  async resetPassword ({ request, response, params }) {
+    try {
+      const user = await User.findByOrFail(request.only(['email']));
+      user.restore_password_token = this.getToken();
+      await user.save();
+      const url = `${request.all()['restore_password_url']}?restore_password_token=${user.restore_password_token}`;
+      Event.fire('user::restore_password', user, url);
+      return response.json({ message: Antl.formatMessage('message.ResetLetterWasSent') });
+    } catch (e) {
+      return response.status(403).json({ message: Antl.formatMessage('message.UserNotFound') });
+    }
+  }
+
+  async setNewPassword ({ request, response, auth }) {
+    try {
+      const user = await User.findByOrFail(request.only(['restore_password_token']));
+      const newPassword = request.all()['password'];
+      user.password = newPassword;
+      user.restore_password_token = null;
+      await user.save();
+      const { token } = await auth.attempt(user.email, newPassword);
+      return response.header('Authorization', `Bearer ${token}`)
+        .json({ message: Antl.formatMessage('message.PasswordChanged') });
+    } catch (e) {
+      return response.status(403).json({ message: e.message });
+    }
+  }
+
+  async refresh ({ request, response, auth }) {
+    try {
+      const { token } = await auth.generateForRefreshToken(request.all()['refresh_token']);
+      return response.header('Authorization', `Bearer ${token}`)
+        .json({ message: Antl.formatMessage('message.TokenRefresh') });
+    } catch (e) {
+      return response.status(403).json({ message: e.message });
+    }
+  }
+
+  async logout ({ request, response, auth }) {
+    try {
+      await auth.authenticator('jwt').revokeTokens();
+      return response.json({ message: Antl.formatMessage('message.Logout') });
+    } catch (e) {
+      return response.status(403).json({ message: Antl.formatMessage('message.LogoutError') });
     }
   }
 }

@@ -43,6 +43,7 @@ test('should return error, because user not confirmed', async ({ client, assert 
     .post(Route.url('login'))
     .send({ email: user.email, password: 'password' })
     .end();
+  console.log(response.text);
 
   response.assertStatus(403);
   response.assertError({ message: 'User not found' });
