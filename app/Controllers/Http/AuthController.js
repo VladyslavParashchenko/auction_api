@@ -21,7 +21,7 @@ class AuthController extends BaseController {
       user.confirmation_token = null;
       user.confirmed_at = new Date();
       await user.save();
-      return response.redirect(Env.get('CONFIRM_SUCCESS_URL'));
+      return response.redirect(Env.get('CONFIRM_SUCCESS_URL', '/'));
     } catch (e) {
       return response.status(403).json({ message: Antl.formatMessage('message.UserNotFound') });
     }
@@ -31,10 +31,8 @@ class AuthController extends BaseController {
     try {
       const { email, password } = request.all();
       const user = await User.findByOrFail({ email: email, confirmation_token: null });
-      let sd = await auth.withRefreshToken().attempt(email, password);
-      console.log(JSON.stringify(sd));
-      let { token, refreshToken } = sd;
-      console.log(refreshToken);
+      let tokenObject = await auth.withRefreshToken().attempt(email, password);
+      let { token, refreshToken } = tokenObject;
       response.header('Authorization', `Bearer ${token}`).header('refreshToken', refreshToken).json(user);
     } catch (e) {
       return response.status(403).json({ message: Antl.formatMessage('message.UserNotFound') });
@@ -65,7 +63,7 @@ class AuthController extends BaseController {
       return response.header('Authorization', `Bearer ${token}`)
         .json({ message: Antl.formatMessage('message.PasswordChanged') });
     } catch (e) {
-      return response.status(403).json({ message: e.message });
+      return response.status(400).json({ message: Antl.formatMessage('message.PasswordNotChanged') });
     }
   }
 
@@ -75,7 +73,7 @@ class AuthController extends BaseController {
       return response.header('Authorization', `Bearer ${token}`)
         .json({ message: Antl.formatMessage('message.TokenRefresh') });
     } catch (e) {
-      return response.status(403).json({ message: e.message });
+      return response.status(400).json({ message: e.message });
     }
   }
 
@@ -84,7 +82,7 @@ class AuthController extends BaseController {
       await auth.authenticator('jwt').revokeTokens();
       return response.json({ message: Antl.formatMessage('message.Logout') });
     } catch (e) {
-      return response.status(403).json({ message: Antl.formatMessage('message.LogoutError') });
+      return response.status(400).json({ message: Antl.formatMessage('message.LogoutError') });
     }
   }
 }

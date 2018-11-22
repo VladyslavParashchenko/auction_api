@@ -23,7 +23,6 @@ test('should change user password', async ({ client, assert }) => {
         password_confirmation: newPassword
       })
     .end();
-  console.log(response.status, response.text);
   response.assertStatus(200);
   response.assertJSON({ message: Antl.formatMessage('message.PasswordChanged') });
   assert.isNotNull(response.headers['Authorization']);

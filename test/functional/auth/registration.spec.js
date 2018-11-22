@@ -4,6 +4,7 @@ const validateErrorGeneretor = require('../../helper/generateValidatorError.js')
 const Route = use('Route');
 const User = use('App/Models/User');
 const Event = use('Event');
+const Factory = use('Factory');
 trait('DatabaseTransactions');
 trait('Test/ApiClient');
 
@@ -49,7 +50,6 @@ test('should return validate birth_day error', async ({ client }) => {
     .send(data)
     .end();
   response.assertStatus(400);
-  console.log(client);
   response.assertError(validateErrorGeneretor.generateError('before_offset_of', 'birth_day', '21 years'));
 });
 
@@ -79,15 +79,7 @@ test('should create new user and return user data in response', async ({ client 
 
 test('should run event for send email', async ({ client, assert }) => {
   Event.fake();
-  const data = {
-    email: 'test@email.com',
-    first_name: 'Name',
-    last_name: 'LastName',
-    phone: '+999999999999',
-    password: 'password',
-    password_confirmation: 'password',
-    birth_day: new Date(1990, 1, 1)
-  };
+  const data = await Factory.model('App/Models/User').create();
   const response = await client
     .post(Route.url('registration'))
     .accept('json')

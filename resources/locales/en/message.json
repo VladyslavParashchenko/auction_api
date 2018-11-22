@@ -4,5 +4,7 @@
   "PasswordChanged": "User password was changed",
   "PasswordNotChanged": "User password was not changed",
   "TokenRefresh": "Token was refresh",
-  "TokenNotRefresh": "Token was not refresh"
+  "TokenNotRefresh": "Token was not refresh",
+  "LogoutError": "Logout error",
+  "Logout": "You logout"
 }

@@ -26,5 +26,6 @@ Route.group(() => {
   Route.post('login', 'AuthController.login').validator('UserLogin').as('login');
   Route.post('reset_password', 'AuthController.resetPassword').validator('UserResetPassword').as('resetPassword');
   Route.put('set_password', 'AuthController.setNewPassword').validator('UserSetNewPassword').as('setNewPassword');
-  Route.post('refresh_token', 'AuthController.refresh').middleware('auth').as('refreshToken');
+  Route.post('refresh_token', 'AuthController.refresh').as('refreshToken');
+  Route.delete('logout', 'AuthController.logout').middleware('auth').as('logout');
 }).prefix('/api/auth');

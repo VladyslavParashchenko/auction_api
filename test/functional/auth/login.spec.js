@@ -43,8 +43,6 @@ test('should return error, because user not confirmed', async ({ client, assert 
     .post(Route.url('login'))
     .send({ email: user.email, password: 'password' })
     .end();
-  console.log(response.text);
-
   response.assertStatus(403);
   response.assertError({ message: 'User not found' });
 });
@@ -66,7 +64,7 @@ test('should login user', async ({ client, assert }) => {
     .end();
 
   response.assertStatus(200);
-  assert.isNotNull(response.headers['Authorization']);
+  assert.isNotNull(response.headers['authorization']);
   response.assertJSONSubset({
     email: data.email,
     first_name: data.first_name,
