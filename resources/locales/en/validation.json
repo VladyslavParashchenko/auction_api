@@ -4,5 +4,8 @@
   "unique": "This {name} is already exists.",
   "confirmed": "{name} have to confirmed",
   "date": "{name} is invalid",
-  "before_offset_of": "You have to be older than {value}"
+  "before_offset_of": "You have to be older than {value}",
+  "number": "{name} must have a valid numeric value",
+  "after": "{name} have to be greater then {value}",
+  "above": "{name} have to be greater then {value}"
 }

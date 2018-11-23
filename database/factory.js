@@ -13,6 +13,7 @@
 
 /** @type {import('@adonisjs/lucid/src/Factory')} */
 const Factory = use('Factory')
+const dayjs = require('dayjs')
 
 Factory.blueprint('App/Models/User', async (faker, i, data) => {
   return {
@@ -24,6 +25,7 @@ Factory.blueprint('App/Models/User', async (faker, i, data) => {
     confirmation_token: null,
     password: 'password',
     restore_password_token: data.restore_password_token || ''
+
   }
 })
 
@@ -32,5 +34,17 @@ Factory.blueprint('App/Models/Token', async (faker, i, data) => {
     is_revoked: false,
     type: 'jwt_refresh_token',
     token: data.token || '1111111111111111.111111111111.11111111'
+  }
+})
+
+Factory.blueprint('App/Models/Lot', async (faker, i, data) => {
+  return {
+    title: 'new_title',
+    current_price: 2000,
+    estimated_price: 3000,
+    description: 'text',
+    user_id: data.user_id,
+    start_time: dayjs().add(7, 'day'),
+    end_time: dayjs().add(10, 'day')
   }
 })
