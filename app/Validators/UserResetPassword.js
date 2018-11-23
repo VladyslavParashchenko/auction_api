@@ -6,7 +6,7 @@ class UserResetPassword extends BaseValidator {
   get rules () {
     return {
       email: 'required|email',
-      restore_password_url: 'required'
+      restore_password_url: 'required|string'
     }
   }
 }

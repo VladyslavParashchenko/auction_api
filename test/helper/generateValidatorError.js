@@ -1,11 +1,8 @@
-const Antl = use('Antl')
-
 module.exports = {
 
-  generateError (ruleName, fieldName, fieldValue) {
+  generateError (ruleName, fieldName) {
     return [
       {
-        message: Antl.formatMessage(`validation.${ruleName}`, { name: fieldName, value: fieldValue }),
         field: fieldName,
         validation: snackCaseToCamelCase(ruleName)
       }

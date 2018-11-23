@@ -16,24 +16,12 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
-})
-
 Route.group(() => {
   Route.post('register', 'AuthController.register').validator('UserRegistration').as('registration')
-  Route.get('confirmation', 'AuthController.confirmation').as('confirmation')
+  Route.get('confirmation', 'AuthController.confirmation').validator('UserConfirmation').as('confirmation')
   Route.post('login', 'AuthController.login').validator('UserLogin').as('login')
   Route.post('reset_password', 'AuthController.resetPassword').validator('UserResetPassword').as('resetPassword')
   Route.put('set_password', 'AuthController.setNewPassword').validator('UserSetNewPassword').as('setNewPassword')
   Route.post('refresh_token', 'AuthController.refresh').as('refreshToken')
   Route.delete('logout', 'AuthController.logout').middleware('auth').as('logout')
 }).prefix('/api/auth')
-
-Route.group(() => {
-  Route.get('lots/my', 'LotController.my').middleware(['auth']).as('myLots')
-  Route.resource('lots', 'LotController').apiOnly().validator(new Map([
-    [['lots.store'], ['LotStoreValidation']],
-    [['lots.update'], ['LotUpdateValidation']]
-  ])).middleware(['auth'])
-}).prefix('/api')

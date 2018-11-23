@@ -1,20 +1,22 @@
 'use strict'
-
-const crypto = require('crypto')
+const Antl = use('Antl')
 
 class BaseController {
-  getToken () {
-    crypto.randomBytes(24).toString('hex')
+  paramsFromRequest (request, paramsList) {
+    return request.only(paramsList)
   }
 
-  paramsFromRequest (request) {
-    return request.only(this.requiredParams)
-  }
-
-  paginationParams (params) {
-    const page = params['page'] || 1
-    const perPage = params['per_page'] || 10
-    return [page, perPage]
+  handleException (response, exception) {
+    switch (exception.name) {
+      case 'ModelNotFoundException':
+        response.status(404).json({ message: Antl.formatMessage('message.ModelNotFoundException') })
+        break
+      case 'InvalidRefreshToken':
+        response.status(401).json({ message: Antl.formatMessage('message.InvalidRefreshToken') })
+        break
+      default:
+        throw exception
+    }
   }
 }
 

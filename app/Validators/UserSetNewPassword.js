@@ -6,7 +6,7 @@ class UserSetNewPassword extends BaseValidator {
   get rules () {
     return {
       password: 'required|confirmed',
-      restore_password_token: 'required'
+      restore_password_token: 'required|string'
     }
   }
 }

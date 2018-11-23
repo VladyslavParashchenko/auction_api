@@ -25,8 +25,8 @@ class User extends Model {
     return this.hasMany('App/Models/Token')
   }
 
-  static get hidden () {
-    return ['password', 'confirmation_token']
+  static get visible () {
+    return ['email', 'first_name', 'last_name', 'phone', 'birth_day']
   }
 
   lots () {

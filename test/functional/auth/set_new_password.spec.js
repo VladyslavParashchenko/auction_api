@@ -3,7 +3,6 @@
 const { test, trait } = use('Test/Suite')('Auth - set new password')
 const Route = use('Route')
 const Factory = use('Factory')
-const Antl = use('Antl')
 const validateErrorMaker = require('../../helper/generateValidatorError.js')
 
 trait('Auth/Client')
@@ -24,8 +23,7 @@ test('should change user password', async ({ client, assert }) => {
       })
     .end()
   response.assertStatus(200)
-  response.assertJSON({ message: Antl.formatMessage('message.PasswordChanged') })
-  assert.isNotNull(response.headers['Authorization'])
+  assert.isNotNull(response.headers['authorization'])
 })
 
 test('should return error, because restore_password_token is not provided', async ({ client, assert }) => {
@@ -37,7 +35,8 @@ test('should return error, because restore_password_token is not provided', asyn
         password: newPassword,
         password_confirmation: newPassword
       })
+    .accept('json')
     .end()
   response.assertStatus(400)
-  response.assertError(validateErrorMaker.generateError('required', 'restore_password_token'))
+  response.assertJSONSubset(validateErrorMaker.generateError('required', 'restore_password_token'))
 })
