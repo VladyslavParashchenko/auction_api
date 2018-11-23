@@ -1,6 +1,5 @@
 {
   "UserNotFound": "User not found",
-  "LotNotFound": "Lot not found",
   "ResetLetterWasSent": "Letter for restore password was sent",
   "PasswordChanged": "User password was changed",
   "PasswordNotChanged": "User password was not changed",

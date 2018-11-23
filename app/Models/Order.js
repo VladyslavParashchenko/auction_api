@@ -4,6 +4,10 @@
 const Model = use('Model')
 
 class Order extends Model {
+  static get table () {
+    return 'order_items'
+  }
+
   user () {
     return this.belongsTo('App/Models/User')
   }
