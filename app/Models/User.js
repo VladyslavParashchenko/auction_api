@@ -1,14 +1,18 @@
-'use strict';
+'use strict'
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Model = use('Model');
+const Model = use('Model')
 
 /** @type {import('@adonisjs/framework/src/Hash')} */
 
 class User extends Model {
   static boot () {
-    super.boot();
-    this.addHook('beforeSave', 'UserHook.hashPassword');
+    super.boot()
+    this.addHook('beforeSave', 'UserHook.hashPassword')
+  }
+
+  static scopeConfirmed (query) {
+    return query.whereNotNull('confirmed_at')
   }
 
   /**
@@ -22,24 +26,24 @@ class User extends Model {
    * @return {Object}
    */
   tokens () {
-    return this.hasMany('App/Models/Token');
+    return this.hasMany('App/Models/Token')
   }
 
-  static get hidden () {
-    return ['password', 'confirmation_token'];
+  static get visible () {
+    return ['email', 'first_name', 'last_name', 'phone', 'birth_day']
   }
 
   lots () {
-    return this.hasMany('App/Models/Lot');
+    return this.hasMany('App/Models/Lot')
   }
 
   bids () {
-    return this.hasMany('App/Models/Bid');
+    return this.hasMany('App/Models/Bid')
   }
 
   orders () {
-    return this.hasMany('App/Models/Order');
+    return this.hasMany('App/Models/Order')
   }
 }
 
-module.exports = User;
+module.exports = User

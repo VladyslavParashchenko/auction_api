@@ -6,5 +6,7 @@
   "TokenRefresh": "Token was refresh",
   "TokenNotRefresh": "Token was not refresh",
   "LogoutError": "Logout error",
-  "Logout": "You logout"
+  "Logout": "You logout",
+  "ModelNotFoundException": "ModelNotFoundException",
+  "InvalidRefreshToken": "InvalidRefreshToken"
 }

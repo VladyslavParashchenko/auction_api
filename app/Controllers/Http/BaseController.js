@@ -1,11 +1,19 @@
-'use strict';
-
-const crypto = require('crypto');
+'use strict'
+const Antl = use('Antl')
 
 class BaseController {
-  getToken () {
-    crypto.randomBytes(24).toString('hex');
+  handleException (response, exception) {
+    switch (exception.name) {
+      case 'ModelNotFoundException':
+        response.status(404).send({ message: Antl.formatMessage('message.ModelNotFoundException') })
+        break
+      case 'InvalidRefreshToken':
+        response.status(401).send({ message: Antl.formatMessage('message.InvalidRefreshToken') })
+        break
+      default:
+        throw exception
+    }
   }
 }
 
-module.exports = BaseController;
+module.exports = BaseController
