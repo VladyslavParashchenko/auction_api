@@ -8,6 +8,9 @@
   "TokenNotRefresh": "Token was not refresh",
   "LogoutError": "Logout error",
   "Logout": "You logout",
+  "ModelNotFoundException": "ModelNotFoundException",
+  "InvalidRefreshToken": "InvalidRefreshToken"
+  "Logout": "You logout",
   "ProposedPriceError": "You can not create bid with proposed price, which less than previous price",
   "YouCanNotAddBidForYourOwnLot": "You can't add bid for your own lot"
 }

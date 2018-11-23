@@ -16,13 +16,9 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
-})
-
 Route.group(() => {
   Route.post('register', 'AuthController.register').validator('UserRegistration').as('registration')
-  Route.get('confirmation', 'AuthController.confirmation').as('confirmation')
+  Route.get('confirmation', 'AuthController.confirmation').validator('UserConfirmation').as('confirmation')
   Route.post('login', 'AuthController.login').validator('UserLogin').as('login')
   Route.post('reset_password', 'AuthController.resetPassword').validator('UserResetPassword').as('resetPassword')
   Route.put('set_password', 'AuthController.setNewPassword').validator('UserSetNewPassword').as('setNewPassword')

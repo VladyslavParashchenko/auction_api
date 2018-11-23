@@ -11,6 +11,7 @@ test('should return auth error', async ({ client }) => {
   await Factory.model('App/Models/User').create()
   const response = await client
     .delete(Route.url('logout'))
+    .accept('json')
     .end()
   response.assertStatus(401)
   response.assertError({

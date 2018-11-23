@@ -17,4 +17,4 @@ yarn.lock
 shrinkwrap.yaml
 package-lock.json
 .env
-public
+.env.testing

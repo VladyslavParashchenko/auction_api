@@ -2,73 +2,58 @@
 
 const { test, trait } = use('Test/Suite')('Auth - login')
 const Route = use('Route')
-const User = use('App/Models/User')
+const Factory = use('Factory')
+const Antl = use('Antl')
 const validateErrorMaker = require('../../helper/generateValidatorError.js')
 trait('DatabaseTransactions')
 trait('Test/ApiClient')
 
-test('should return error email validate error', async ({ client, assert }) => {
+test('should return error email validate error', async ({ client }) => {
   const response = await client
     .post(Route.url('login'))
     .send({ email: 'not valid email', password: 'password' })
+    .accept('json')
     .end()
-
   response.assertStatus(400)
-  response.assertError(validateErrorMaker.generateError('email', 'email'))
+  response.assertJSONSubset(validateErrorMaker.generateError('email', 'email'))
 })
 
-test('should return error password validate error', async ({ client, assert }) => {
+test('should return error password validate error', async ({ client }) => {
   const response = await client
     .post(Route.url('login'))
     .send({ email: 'email@example.com' })
+    .accept('json')
     .end()
 
   response.assertStatus(400)
-  response.assertError(validateErrorMaker.generateError('required', 'password'))
+  response.assertJSONSubset(validateErrorMaker.generateError('required', 'password'))
 })
 
-test('should return error, because user not confirmed', async ({ client, assert }) => {
-  const data = {
-    email: 'test@email.com',
-    first_name: 'Name',
-    last_name: 'LastName',
-    phone: '+999999999999',
-    confirmation_token: '111111111111',
-    password: 'password',
-    birth_day: new Date(1912, 7, 25)
-  }
-  const user = await User.create(data)
-  await user.save()
+test('should return error, because user not confirmed', async ({ client }) => {
+  const user = await Factory.model('App/Models/User').create({ confirmation_token: '1111111111111111111' })
   const response = await client
     .post(Route.url('login'))
     .send({ email: user.email, password: 'password' })
+    .accept('json')
     .end()
-  response.assertStatus(403)
-  response.assertError({ message: 'User not found' })
+  response.assertStatus(404)
+  response.assertError({ message: Antl.formatMessage('message.ModelNotFoundException') })
 })
 
 test('should login user', async ({ client, assert }) => {
-  const data = {
-    email: 'test@email.com',
-    first_name: 'Name',
-    last_name: 'LastName',
-    phone: '+999999999999',
-    password: 'password',
-    birth_day: new Date(1912, 7, 25)
-  }
-  const user = await User.create(data)
-  await user.save()
+  const user = await Factory.model('App/Models/User').create()
   const response = await client
     .post(Route.url('login'))
     .send({ email: user.email, password: 'password' })
+    .type('json')
+    .accept('json')
     .end()
-
   response.assertStatus(200)
   assert.isNotNull(response.headers['authorization'])
   response.assertJSONSubset({
-    email: data.email,
-    first_name: data.first_name,
-    last_name: data.last_name,
-    phone: data.phone
+    email: user.email,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    phone: user.phone
   })
 })

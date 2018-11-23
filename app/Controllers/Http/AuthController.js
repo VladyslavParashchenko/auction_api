@@ -2,78 +2,67 @@
 
 const BaseController = use('App/Controllers/Http/BaseController')
 const User = use('App/Models/User')
-const Event = use('Event')
-const Env = use('Env')
+const AuthService = use('AuthService')
 const Antl = use('Antl')
 
 class AuthController extends BaseController {
   async register ({ request, response }) {
-    const params = request.only(['email', 'first_name', 'last_name', 'phone', 'birth_day', 'password'])
-    params['confirmation_token'] = this.getToken()
-    const user = await User.create(params)
-    Event.fire('user::new', user)
+    const params = this._userParams(request)
+    const user = new User()
+    user.fill(params)
+    await AuthService.sendConfirmationLetter(user)
+    await user.save()
     return response.json(user)
   }
 
   async confirmation ({ request, response }) {
     try {
-      const user = await User.findByOrFail('confirmation_token', request.get().confirmation_token)
-      user.confirmation_token = null
-      user.confirmed_at = new Date()
-      await user.save()
-      return response.redirect(Env.get('CONFIRM_SUCCESS_URL', '/'))
+      const user = await User.findByOrFail(this.paramsFromRequest(request, ['confirmation_token']))
+      await AuthService.confirmAccount(user)
+      return response.redirect(AuthService.frontAppUrl())
     } catch (e) {
-      return response.status(403).json({ message: Antl.formatMessage('message.UserNotFound') })
+      this.handleException(response, e)
     }
   }
 
   async login ({ request, auth, response }) {
     try {
-      const { email, password } = request.all()
-      const user = await User.findByOrFail({ email: email, confirmation_token: null })
-      let tokenObject = await auth.withRefreshToken().attempt(email, password)
-      let { token, refreshToken } = tokenObject
+      const params = this._userCredentials(request)
+      const user = await User.findByOrFail({ email: params.email, confirmation_token: null })
+      const { token, refreshToken } = await AuthService.login(auth, params)
       response.header('Authorization', `Bearer ${token}`).header('refreshToken', refreshToken).json(user)
     } catch (e) {
-      return response.status(403).json({ message: Antl.formatMessage('message.UserNotFound') })
+      this.handleException(response, e)
     }
   }
 
-  async resetPassword ({ request, response, params }) {
+  async resetPassword ({ request, response }) {
     try {
-      const user = await User.findByOrFail(request.only(['email']))
-      user.restore_password_token = this.getToken()
-      await user.save()
-      const url = `${request.all()['restore_password_url']}?restore_password_token=${user.restore_password_token}`
-      Event.fire('user::restore_password', user, url)
+      const user = await User.findByOrFail(this.paramsFromRequest(request, ['email']))
+      await AuthService.resetPassword(request, user)
       return response.json({ message: Antl.formatMessage('message.ResetLetterWasSent') })
     } catch (e) {
-      return response.status(403).json({ message: Antl.formatMessage('message.UserNotFound') })
+      this.handleException(response, e)
     }
   }
 
   async setNewPassword ({ request, response, auth }) {
     try {
-      const user = await User.findByOrFail(request.only(['restore_password_token']))
-      const newPassword = request.all()['password']
-      user.password = newPassword
-      user.restore_password_token = null
-      await user.save()
-      const { token } = await auth.attempt(user.email, newPassword)
-      return response.header('Authorization', `Bearer ${token}`)
-        .json({ message: Antl.formatMessage('message.PasswordChanged') })
+      const user = await User.findByOrFail(this.paramsFromRequest(request, ['restore_password_token']))
+      const { token, refreshToken } = await AuthService.setNewPassword(request, user, auth)
+      response.header('Authorization', `Bearer ${token}`).header('refreshToken', refreshToken).json(user)
     } catch (e) {
-      return response.status(400).json({ message: Antl.formatMessage('message.PasswordNotChanged') })
+      this.handleException(response, e)
     }
   }
 
   async refresh ({ request, response, auth }) {
     try {
-      const { token } = await auth.generateForRefreshToken(request.all()['refresh_token'])
+      const { token } = await auth.generateForRefreshToken(this._refreshToken(request))
       return response.header('Authorization', `Bearer ${token}`)
         .json({ message: Antl.formatMessage('message.TokenRefresh') })
     } catch (e) {
-      return response.status(400).json({ message: e.message })
+      this.handleException(response, e)
     }
   }
 
@@ -82,8 +71,20 @@ class AuthController extends BaseController {
       await auth.authenticator('jwt').revokeTokens()
       return response.json({ message: Antl.formatMessage('message.Logout') })
     } catch (e) {
-      return response.status(400).json({ message: Antl.formatMessage('message.LogoutError') })
+      this.handleException(response, e)
     }
+  }
+
+  _userParams (request) {
+    return this.paramsFromRequest(request, ['email', 'first_name', 'last_name', 'phone', 'birth_day', 'password'])
+  }
+
+  _userCredentials (request) {
+    return this.paramsFromRequest(request, ['email', 'password'])
+  }
+
+  _refreshToken (request) {
+    return this.paramsFromRequest(request, ['refresh_token'])['refresh_token']
   }
 }
 
