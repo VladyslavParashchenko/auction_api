@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
@@ -35,18 +35,4 @@ class Lot extends Model {
     return this.hasMany('App/Models/Bid').orderBy('created_at', 'desc')
   }
 
-  user () {
-    return this.belongsTo('App/Models/User')
-  }
-
-  winnerBid () {
-    return this.belongsTo('App/Models/Bid', 'winner_bid_id')
-  }
-
-  static get visible () {
-    return ['id', 'title', 'description', 'current_price', 'estimated_price', 'user_id',
-      'start_time', 'end_time', 'status']
-  }
-}
-
-module.exports = Lot
+module.exports = Lot;

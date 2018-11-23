@@ -31,6 +31,18 @@ test('should return error', async ({ client }) => {
 
 test('should return validate unique email error', async ({ client }) => {
   await Factory.model('App/Models/User').create({ email: data['email'] })
+  }
+})
+
+test('should return error', async ({ client }) => {
+  const response = await client
+    .post(Route.url('registration'))
+    .end()
+  response.assertStatus(400)
+})
+
+test('should return validate unique email error', async ({ client }) => {
+  await Factory.model('App/Models/User').create({ email: data['email'] })
   const response = await client
     .post(Route.url('registration'))
     .send(data)
@@ -52,6 +64,15 @@ test('should return validate birth_day error', async ({ client }) => {
 })
 
 test('should create new user and return user data in response', async ({ client }) => {
+  const data = {
+    email: 'test@email.com',
+    first_name: 'Name',
+    last_name: 'LastName',
+    phone: '+999999999999',
+    password: 'password',
+    password_confirmation: 'password',
+    birth_day: new Date(1990, 1, 1)
+  };
   const response = await client
     .post(Route.url('registration'))
     .accept('json')
@@ -67,6 +88,8 @@ test('should create new user and return user data in response', async ({ client 
 })
 
 test('should run event for send email', async ({ client, assert }) => {
+  Event.fake();
+  const data = await Factory.model('App/Models/User').create();
   const response = await client
     .post(Route.url('registration'))
     .accept('json')
@@ -83,6 +106,6 @@ test('should run event for send email', async ({ client, assert }) => {
   assert.equal(recentEvent.event, 'user::new')
 })
 
-after(async () => {
+after(function () {
   Event.restore()
 })

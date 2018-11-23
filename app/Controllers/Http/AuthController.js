@@ -7,17 +7,19 @@ const Antl = use('Antl')
 
 class AuthController extends BaseController {
   async register ({ request, response }) {
-    const params = this._userParams(request)
-    const user = new User()
-    user.fill(params)
-    await AuthService.sendConfirmationLetter(user)
-    await user.save()
-    return response.json(user)
+    try {
+      const params = this._userParams(request)
+      const user = await User.create(params)
+      await AuthService.sendConfirmationLetter(user)
+      return response.send(user)
+    } catch (e) {
+      this.handleException(response, e)
+    }
   }
 
   async confirmation ({ request, response }) {
     try {
-      const user = await User.findByOrFail(this.paramsFromRequest(request, ['confirmation_token']))
+      const user = await User.findByOrFail(request.only(['confirmation_token']))
       await AuthService.confirmAccount(user)
       return response.redirect(AuthService.frontAppUrl())
     } catch (e) {
@@ -30,7 +32,7 @@ class AuthController extends BaseController {
       const params = this._userCredentials(request)
       const user = await User.findByOrFail({ email: params.email, confirmation_token: null })
       const { token, refreshToken } = await AuthService.login(auth, params)
-      response.header('Authorization', `Bearer ${token}`).header('refreshToken', refreshToken).json(user)
+      response.header('Authorization', `Bearer ${token}`).header('refreshToken', refreshToken).send(user)
     } catch (e) {
       this.handleException(response, e)
     }
@@ -38,7 +40,7 @@ class AuthController extends BaseController {
 
   async resetPassword ({ request, response }) {
     try {
-      const user = await User.findByOrFail(this.paramsFromRequest(request, ['email']))
+      const user = await User.findByOrFail(request.only(['email']))
       await AuthService.resetPassword(request, user)
       return response.json({ message: Antl.formatMessage('message.ResetLetterWasSent') })
     } catch (e) {
@@ -48,9 +50,9 @@ class AuthController extends BaseController {
 
   async setNewPassword ({ request, response, auth }) {
     try {
-      const user = await User.findByOrFail(this.paramsFromRequest(request, ['restore_password_token']))
-      const { token, refreshToken } = await AuthService.setNewPassword(request, user, auth)
-      response.header('Authorization', `Bearer ${token}`).header('refreshToken', refreshToken).json(user)
+      const user = await User.findByOrFail(request.only(['restore_password_token']))
+      const tokenObject = await AuthService.setNewPassword(user, auth, request.all())
+      this._returnTokenToUser(response, user, tokenObject)
     } catch (e) {
       this.handleException(response, e)
     }
@@ -58,9 +60,8 @@ class AuthController extends BaseController {
 
   async refresh ({ request, response, auth }) {
     try {
-      const { token } = await auth.generateForRefreshToken(this._refreshToken(request))
-      return response.header('Authorization', `Bearer ${token}`)
-        .json({ message: Antl.formatMessage('message.TokenRefresh') })
+      const tokenObject = await auth.generateForRefreshToken(this._refreshToken(request))
+      this._returnTokenToUser(response, { message: Antl.formatMessage('message.TokenRefresh') }, tokenObject)
     } catch (e) {
       this.handleException(response, e)
     }
@@ -76,15 +77,19 @@ class AuthController extends BaseController {
   }
 
   _userParams (request) {
-    return this.paramsFromRequest(request, ['email', 'first_name', 'last_name', 'phone', 'birth_day', 'password'])
+    return request.only(['email', 'first_name', 'last_name', 'phone', 'birth_day', 'password'])
   }
 
   _userCredentials (request) {
-    return this.paramsFromRequest(request, ['email', 'password'])
+    return request.only(['email', 'password'])
   }
 
   _refreshToken (request) {
-    return this.paramsFromRequest(request, ['refresh_token'])['refresh_token']
+    return request.only(['refresh_token'])['refresh_token']
+  }
+
+  _returnTokenToUser (response, body, { token, refreshToken }) {
+    response.header('Authorization', `Bearer ${token}`).header('refreshToken', refreshToken).send(body)
   }
 }
 

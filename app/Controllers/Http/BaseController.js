@@ -2,8 +2,8 @@
 const Antl = use('Antl')
 
 class BaseController {
-  paramsFromRequest (request, paramsList) {
-    return request.only(paramsList)
+  getToken () {
+    crypto.randomBytes(24).toString('hex');
   }
 
   handleException (response, exception) {

@@ -5,31 +5,30 @@ const Event = use('Event')
 class AuthService {
   constructor () {
     this.Config = use('Adonis/Src/Config')
-    this.user = use(this.get('userModel'))
+    this.user = use(this.getValueFromConfig('userModel'))
   }
 
-  get (name) {
+  getValueFromConfig (name) {
     return this.Config.get(`authProvider.${name}`)
   }
 
-  async login (auth, authParams) {
-    const { email, password } = authParams
+  async login (auth, { email, password }) {
     let tokenObject = await auth.withRefreshToken().attempt(email, password)
     return tokenObject
   }
 
   generateToken () {
-    crypto.randomBytes(24).toString('hex')
+    return crypto.randomBytes(24).toString('hex')
   }
 
   async resetPassword (request, user) {
     user.restore_password_token = this.generateToken()
     await user.save()
-    await this.sendRestorePasswordLetter(request, user)
+    await this.sendRestorePasswordLetter(request.all().restore_password_url, user)
   }
 
-  async sendRestorePasswordLetter (request, user) {
-    const url = this.generateRestoreUrl(request.all().restore_password_url, user.restore_password_token)
+  async sendRestorePasswordLetter (restorePasswordUrl, user) {
+    const url = this.generateRestoreUrl(restorePasswordUrl, user.restore_password_token)
     Event.fire('user::restore_password', user, url)
   }
 
@@ -37,12 +36,11 @@ class AuthService {
     return `${restorePasswordUrl}?restore_password_token=${restorePasswordToken}`
   }
 
-  async setNewPassword (request, user, auth) {
-    const newPassword = request.all()['password']
-    user.password = newPassword
+  async setNewPassword (user, auth, { password }) {
+    user.password = password
     user.restore_password_token = null
     await user.save()
-    const tokenObject = await auth.withRefreshToken().attempt(user.email, newPassword)
+    const tokenObject = await auth.withRefreshToken().attempt(user.email, password)
     return tokenObject
   }
   async confirmAccount (user) {
@@ -52,12 +50,13 @@ class AuthService {
   }
 
   async sendConfirmationLetter (user) {
-    user.merge({ confirmation_token: this.generateToken() })
+    user.confirmation_token = this.generateToken()
+    user = await user.save()
     Event.fire('user::new', user)
   }
 
   frontAppUrl () {
-    return this.get('confirmSuccessUrl')
+    return this.getValueFromConfig('confirmSuccessUrl')
   }
 }
 

@@ -1,8 +1,8 @@
-'use strict'
+'use strict';
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Event = use('Event')
 const Model = use('Model')
+
 class Bid extends Model {
   static boot () {
     super.boot()
@@ -18,7 +18,7 @@ class Bid extends Model {
   }
 
   lot () {
-    return this.belongsTo('App/Models/Lot')
+    return this.belongsTo('App/Models/Lot');
   }
 
   user () {
@@ -30,4 +30,4 @@ class Bid extends Model {
   }
 }
 
-module.exports = Bid
+module.exports = Bid;
