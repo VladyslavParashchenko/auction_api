@@ -1,20 +1,20 @@
-'use strict';
+'use strict'
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Model = use('Model');
+const Model = use('Model')
 
 class Order extends Model {
   static get table () {
-    return 'order_items';
+    return 'order_items'
   }
 
   user () {
-    this.belongsTo('App/Models/User');
+    this.belongsTo('App/Models/User')
   }
 
   bid () {
-    this.belongsTo('App/Models/Bid');
+    this.belongsTo('App/Models/Bid')
   }
 }
 
-module.exports = Order;
+module.exports = Order

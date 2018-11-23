@@ -1,11 +1,11 @@
-'use strict';
+'use strict'
 
-const crypto = require('crypto');
+const crypto = require('crypto')
 
 class BaseController {
   getToken () {
-    crypto.randomBytes(24).toString('hex');
+    crypto.randomBytes(24).toString('hex')
   }
 }
 
-module.exports = BaseController;
+module.exports = BaseController

@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const BaseValidator = use('App/Validators/BaseValidator');
+const BaseValidator = use('App/Validators/BaseValidator')
 
 class UserRegistration extends BaseValidator {
   get validateAll () {
-    return true;
+    return true
   }
 
   get rules () {
@@ -15,8 +15,8 @@ class UserRegistration extends BaseValidator {
       phone: 'required',
       first_name: 'required',
       last_name: 'required'
-    };
+    }
   }
 }
 
-module.exports = UserRegistration;
+module.exports = UserRegistration

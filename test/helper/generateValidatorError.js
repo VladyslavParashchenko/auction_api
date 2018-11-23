@@ -1,4 +1,4 @@
-const Antl = use('Antl');
+const Antl = use('Antl')
 
 module.exports = {
 
@@ -9,12 +9,12 @@ module.exports = {
         field: fieldName,
         validation: snackCaseToCamelCase(ruleName)
       }
-    ];
+    ]
   }
-};
+}
 
 function snackCaseToCamelCase (string) {
   return string.replace(/_([a-z])/g, function (g) {
-    return g[1].toUpperCase();
-  });
+    return g[1].toUpperCase()
+  })
 }

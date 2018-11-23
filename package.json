@@ -9,8 +9,8 @@
     "start-dev": "nodemon ./server.js",
     "test": "node ace test",
     "test-debug": "node --inspect ace test",
-    "lint-fix": "./node_modules/.bin/eslint . --ext .js --fix",
-    "lint": "./node_modules/.bin/eslint . --ext .js"
+    "lint-fix": "standard --fix",
+    "lint": "standard"
   },
   "keywords": [
     "adonisjs",
@@ -34,13 +34,17 @@
     "pg": "^7.6.1"
   },
   "devDependencies": {
-    "eslint": "^5.9.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^8.0.0",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "nodemon": "^1.18.6"
+    "nodemon": "^1.18.6",
+    "standard": "^12.0.1"
+  },
+  "standard": {
+    "globals": [
+      "use",
+      "ace"
+    ],
+    "ignore": [
+      "node_modules"
+    ]
   },
   "autoload": {
     "App": "./app"
