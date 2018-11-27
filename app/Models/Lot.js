@@ -27,6 +27,10 @@ class Lot extends Model {
     const inProcessStatus = 'inProcess'
     return query.whereRaw('status = ? or user_id = ?', [inProcessStatus, userId])
   }
+
+  bids () {
+    this.hasMany('App/Models/Bid')
+  }
 }
 
 module.exports = Lot

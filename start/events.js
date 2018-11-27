@@ -16,3 +16,21 @@ Event.on('user::restore_password', async (user, link) => {
     message.from(Env.get('EMAIL_SENDER_EMAIL'))
   })
 })
+
+Event.on('lot::purchased', async ({ bidInstance, lot }) => {
+  lot.current_price = bidInstance.proposed_price
+  const lotOwner = await lot.user()
+  const bidOwner = await bidInstance.user()
+  await Mail.send('emails.lot_purchased', lot, (message) => {
+    message.to(lotOwner.email)
+    message.from(Env.get('EMAIL_SENDER_EMAIL'))
+  })
+  await Mail.send('emails.you_purchased_lot', lot, (message) => {
+    message.to(bidOwner.email)
+    message.from(Env.get('EMAIL_SENDER_EMAIL'))
+  })
+})
+
+Event.on('lot::updateCurrentPrice', async (lot) => {
+  await lot.update({ 'current_price': 4 })
+})
