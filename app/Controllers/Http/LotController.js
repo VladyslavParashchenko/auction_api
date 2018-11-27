@@ -60,10 +60,7 @@ class LotController extends BaseController {
 
   async show ({ response, request, auth, params }) {
     try {
-      const lot = await Lot.query().inProcessOrUserLot(auth.user.id).where('id', params.id).first()
-      if (lot === null) {
-        throw new Error()
-      }
+      const lot = await Lot.query().inProcessOrUserLot(auth.user.id).where('id', params.id).firstOrFail()
       return response.status(200).json(lot)
     } catch (e) {
       return response.status(403).json({ message: Antl.formatMessage('message.LotNotFound') })
