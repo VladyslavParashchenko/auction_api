@@ -1,4 +1,5 @@
 const Helpers = use('Helpers')
+const FileUploaderException = use('App/Exceptions/FileUploaderException')
 
 class BaseUploader {
   constructor (request) {
@@ -16,7 +17,7 @@ class BaseUploader {
       overwrite: true
     })
     if (!file.moved()) {
-      throw new Error(file.error().message)
+      throw new FileUploaderException(file.error().message)
     }
     return `uploads/${fileName}`
   }

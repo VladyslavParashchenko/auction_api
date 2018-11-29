@@ -46,6 +46,7 @@ test('should create new Lot with image', async ({ client }) => {
     .field(data)
     .attach('image', Helpers.appRoot('test/files/image.jpg'))
     .loginVia(user)
+    .accept('json')
     .end()
   response.assertStatus(200)
   response.assertJSONSubset({
@@ -65,6 +66,7 @@ test('should return error, because image has not valid type', async ({ client })
     .field(data)
     .attach('image', Helpers.appRoot('test/files/doc.txt'))
     .loginVia(user)
+    .accept('json')
     .end()
   response.assertStatus(400)
   response.assertJSONSubset({ 'message': 'Invalid file type plain or text. Only image is allowed' })
@@ -77,9 +79,10 @@ test('should return error, because current_price have negative value', async ({ 
     .post(Route.url('lots.store'))
     .field(data)
     .loginVia(user)
+    .accept('json')
     .end()
   response.assertStatus(400)
-  response.assertError(validateErrorMaker.generateError('above', 'current_price', 0))
+  response.assertJSONSubset(validateErrorMaker.generateError('above', 'current_price'))
 })
 
 test('should return error, because estimated_price less than current_price', async ({ client }) => {
@@ -89,10 +92,11 @@ test('should return error, because estimated_price less than current_price', asy
   const response = await client
     .post(Route.url('lots.store'))
     .field(data)
+    .accept('json')
     .loginVia(user)
     .end()
   response.assertStatus(400)
-  response.assertError(validateErrorMaker.generateError('above', 'estimated_price', data.current_price))
+  response.assertJSONSubset(validateErrorMaker.generateError('above', 'estimated_price'))
 })
 
 test('should return error, because start_time less then current date', async ({ client }) => {
@@ -102,10 +106,10 @@ test('should return error, because start_time less then current date', async ({ 
     .post(Route.url('lots.store'))
     .field(data)
     .loginVia(user)
+    .accept('json')
     .end()
   response.assertStatus(400)
-  const { field, validation } = validateErrorMaker.generateError('after', 'start_time', new Date().toISOString())
-  response.assertJSONSubset({ field, validation })
+  response.assertJSONSubset(validateErrorMaker.generateError('after', 'start_time'))
 })
 
 test('should return error, because end_time less then start_time', async ({ client }) => {
@@ -115,8 +119,8 @@ test('should return error, because end_time less then start_time', async ({ clie
     .post(Route.url('lots.store'))
     .field(data)
     .loginVia(user)
+    .accept('json')
     .end()
   response.assertStatus(400)
-  const { field, validation } = validateErrorMaker.generateError('after', 'end_time', new Date().toISOString())
-  response.assertJSONSubset({ field, validation })
+  response.assertJSONSubset(validateErrorMaker.generateError('after', 'end_time'))
 })

@@ -18,6 +18,14 @@ class LotStoreValidation extends BaseValidator {
       end_time: 'to_date'
     }
   }
+
+  get messages () {
+    const baseMessage = super.messages
+    const currentMessage = {
+      'above': '{{field}} have to be greater than'
+    }
+    return { ...baseMessage, ...currentMessage }
+  }
 }
 
 module.exports = LotStoreValidation

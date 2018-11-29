@@ -11,7 +11,6 @@ class LotStoreValidation extends BaseValidator {
       end_time: `required|date|after:${params.start_time}`,
       current_price: 'required|number|above:0',
       estimated_price: `required|number|above:${params.current_price}`
-
     }
   }
   get sanitizationRules () {
@@ -19,6 +18,14 @@ class LotStoreValidation extends BaseValidator {
       start_date: 'to_date',
       end_date: 'to_date'
     }
+  }
+
+  get messages () {
+    const baseMessage = super.messages
+    const currentMessage = {
+      'above': '{{field}} have to be greater than'
+    }
+    return { ...baseMessage, ...currentMessage }
   }
 }
 

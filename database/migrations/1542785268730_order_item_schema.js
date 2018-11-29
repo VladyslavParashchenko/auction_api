@@ -1,7 +1,7 @@
 'use strict'
 
 /** @type {import('@adonisjs/lucid/src/Schema')} */
-const Schema = use('Schema');
+const Schema = use('Schema')
 
 class OrderItemSchema extends Schema {
   up () {

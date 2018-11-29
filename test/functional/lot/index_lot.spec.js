@@ -27,18 +27,18 @@ test('should return lots list', async ({ client, assert }) => {
   }
 })
 
-test('should return error, because user doesn\'t login', async ({ client, assert }) => {
+test('should return error, because user doesn\'t login', async ({ client }) => {
   const response = await client
     .get(Route.url('lots.index'))
     .query({ page: 1, per_page: 5 })
+    .accept('json')
     .end()
   response.assertStatus(401)
-  response.assertError(
-    {
-      'message': 'E_INVALID_JWT_TOKEN: jwt must be provided',
-      'name': 'InvalidJwtToken',
-      'code': 'E_INVALID_JWT_TOKEN',
-      'status': 401
-    }
+  response.assertError({
+    'message': 'E_INVALID_JWT_TOKEN: jwt must be provided',
+    'name': 'InvalidJwtToken',
+    'code': 'E_INVALID_JWT_TOKEN',
+    'status': 401
+  }
   )
 })
