@@ -47,18 +47,6 @@
     "ignore": [
       "node_modules"
     ]
-    "dayjs": "^1.7.7",
-    "nodemon": "^1.18.6",
-    "standard": "^12.0.1"
-  },
-  "standard": {
-    "globals": [
-      "use",
-      "ace"
-    ],
-    "ignore": [
-      "node_modules"
-    ]
   },
   "autoload": {
     "App": "./app"

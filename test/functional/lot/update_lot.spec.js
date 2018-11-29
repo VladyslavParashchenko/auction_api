@@ -3,6 +3,7 @@
 const { test, trait } = use('Test/Suite')('Lot - update')
 const Route = use('Route')
 const Factory = use('Factory')
+const Antl = use('Antl')
 const dayjs = require('dayjs')
 trait('Auth/Client')
 trait('DatabaseTransactions')
@@ -51,8 +52,8 @@ test('should return error, when update lot, which belongs to other user', async 
     .send(data)
     .loginVia(otherUser)
     .end()
-  response.assertStatus(403)
-  response.assertError({ message: 'Lot not found' })
+  response.assertStatus(404)
+  response.assertError({ message: Antl.formatMessage('message.ModelNotFoundException') })
 })
 
 test('should return error, when update lot, which have status inProcess', async ({ client }) => {
@@ -65,6 +66,6 @@ test('should return error, when update lot, which have status inProcess', async 
     .send(data)
     .loginVia(user)
     .end()
-  response.assertStatus(403)
-  response.assertError({ message: 'Lot not found' })
+  response.assertStatus(404)
+  response.assertError({ message: Antl.formatMessage('message.ModelNotFoundException') })
 })

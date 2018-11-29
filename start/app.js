@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /*
 |--------------------------------------------------------------------------
@@ -36,7 +36,7 @@ const providers = [
 const aceProviders = [
   '@adonisjs/lucid/providers/MigrationsProvider',
   '@adonisjs/vow/providers/VowProvider'
-];
+]
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +50,7 @@ const aceProviders = [
 |   { Route: 'Adonis/Src/Route' }
 |
 */
-const aliases = {};
+const aliases = {}
 
 /*
 |--------------------------------------------------------------------------
