@@ -2,7 +2,7 @@ const Helpers = use('Helpers')
 const FileUploaderException = use('App/Exceptions/FileUploaderException')
 
 class BaseUploader {
-  constructor (request) {
+  setRequest (request) {
     this.request = request
   }
 

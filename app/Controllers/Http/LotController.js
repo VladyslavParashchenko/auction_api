@@ -1,9 +1,9 @@
 'use strict'
 
 const BaseController = use('App/Controllers/Http/BaseController')
-const UploadService = use('App/Uploader/LotImageUploader')
+const UploadService = use('LotImageUploader')
 const Lot = use('App/Models/Lot')
-
+const BidPostSerializer = use('BidPostSerializerService')
 class LotController extends BaseController {
   async store ({ response, request, auth }) {
     try {
@@ -40,10 +40,9 @@ class LotController extends BaseController {
     }
   }
 
-  // TODO: rewrite method when bids will be realize
   async my ({ response, request, auth }) {
     try {
-      const lots = await auth.user.lots().paginate(...this.paginationParams(request))
+      const lots = await Lot.query().myLots(auth.user).paginate(...this.paginationParams(request))
       return response.json(lots)
     } catch (e) {
       this.handleException(response, e)
@@ -52,8 +51,10 @@ class LotController extends BaseController {
 
   async show ({ response, request, auth, params }) {
     try {
-      const lot = await Lot.query().inProcessOrUserLot(auth.user.id).where('id', params.id).firstOrFail()
-      return response.json(lot)
+      const lot = await Lot.query().inProcessOrUserLot(auth.user.id).where('id', params.id).with('bids').firstOrFail()
+      let serializedLot = lot.toJSON()
+      serializedLot = BidPostSerializer.reformatBids(serializedLot, auth.user.id)
+      return response.json(serializedLot)
     } catch (e) {
       this.handleException(response, e)
     }
@@ -69,8 +70,8 @@ class LotController extends BaseController {
   }
 
   async saveFile (request, fieldName) {
-    const uploader = new UploadService(request)
-    const filePath = await uploader.uploadFile(fieldName)
+    UploadService.setRequest(request)
+    const filePath = await UploadService.uploadFile(fieldName)
     return filePath
   }
 

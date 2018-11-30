@@ -2,7 +2,6 @@
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
-
 class Lot extends Model {
   static boot () {
     super.boot()
@@ -23,13 +22,30 @@ class Lot extends Model {
     return query.where('status', 'closed')
   }
 
+  static scopeMyLots (query, user) {
+    return query.select('lots.*').leftJoin('bids', 'lots.id', 'bids.lot_id')
+      .whereRaw('bids.user_id = ? or lots.user_id = ?', [user.id, user.id])
+  }
   static scopeInProcessOrUserLot (query, userId) {
     const inProcessStatus = 'inProcess'
     return query.whereRaw('status = ? or user_id = ?', [inProcessStatus, userId])
   }
 
   bids () {
-    this.hasMany('App/Models/Bid')
+    return this.hasMany('App/Models/Bid').orderBy('created_at', 'desc')
+  }
+
+  user () {
+    return this.belongsTo('App/Models/User')
+  }
+
+  winnerBid () {
+    return this.belongsTo('App/Models/Bid', 'winner_bid_id')
+  }
+
+  static get visible () {
+    return ['id', 'title', 'description', 'current_price', 'estimated_price', 'user_id',
+      'start_time', 'end_time', 'status']
   }
 }
 

@@ -21,7 +21,9 @@ const providers = [
   '@adonisjs/mail/providers/MailProvider',
   '@adonisjs/framework/providers/ViewProvider',
   '@adonisjs/antl/providers/AntlProvider',
-  path.join(__dirname, '..', 'providers', 'Auth/Provider')
+  path.join(__dirname, '..', 'providers', 'Auth/Provider'),
+  path.join(__dirname, '..', 'providers', 'BidPostSerializer/Provider'),
+  path.join(__dirname, '..', 'providers', 'Uploader/Provider')
 ]
 
 /*

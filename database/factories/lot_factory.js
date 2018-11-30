@@ -4,7 +4,7 @@ const dayjs = require('dayjs')
 
 const factory = async (faker, i, data) => {
   return {
-    title: data.title || 'new_title',
+    title: data.title || 'title',
     current_price: data.current_price || 2000,
     estimated_price: data.estimated_price || 3000,
     description: data.description || 'text',

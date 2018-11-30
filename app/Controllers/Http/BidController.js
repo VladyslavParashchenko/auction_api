@@ -1,28 +1,23 @@
 'use strict'
 const BaseController = use('App/Controllers/Http/BaseController')
-const Lot = use('App/Models/Lot')
+
 const Bid = use('App/Models/Bid')
 
 class BidController extends BaseController {
-  constructor () {
-    super()
-    this.requiredParams = ['proposed_price']
-  }
-
-  async store ({ request, response, params, auth }) {
+  async store ({ request, response, auth }) {
     try {
-      const bid = await Bid.create(this.paramsFromRequest(request, params, auth))
-      bid.lot().update({ 'current_price': bid.proposed_price })
+      const bid = await Bid.create(this._bidParams(request, auth))
+      await bid.lot().update({ 'current_price': bid.proposed_price })
       response.json(bid)
     } catch (e) {
-      response.status(400).json({ message: e.message })
+      this.handleException(response, e)
     }
   }
 
-  paramsFromRequest (request, params, auth) {
-    const bidParams = super.paramsFromRequest(request)
+  _bidParams (request, auth) {
+    const bidParams = this.paramsFromRequest(request, ['proposed_price'])
     bidParams.user_id = auth.user.id
-    bidParams.lot_id = params.lot_id
+    bidParams.lot_id = request.lot.id
     return bidParams
   }
 }

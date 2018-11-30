@@ -1,5 +1,5 @@
 'use strict'
-const { test, trait, beforeEach } = use('Test/Suite')('Auth - registration')
+const { test, trait, beforeEach, after, before } = use('Test/Suite')('Auth - registration')
 const validateErrorMaker = require('../../helper/generateValidatorError.js')
 const Route = use('Route')
 const Factory = use('Factory')
@@ -19,7 +19,9 @@ beforeEach(async () => {
     birth_day: new Date(1990, 1, 1)
   }
 })
-
+before(async () => {
+  Event.fake()
+})
 test('should return error', async ({ client }) => {
   const response = await client
     .post(Route.url('registration'))
@@ -65,7 +67,6 @@ test('should create new user and return user data in response', async ({ client 
 })
 
 test('should run event for send email', async ({ client, assert }) => {
-  Event.fake()
   const response = await client
     .post(Route.url('registration'))
     .accept('json')
@@ -80,5 +81,8 @@ test('should run event for send email', async ({ client, assert }) => {
   })
   const recentEvent = Event.pullRecent()
   assert.equal(recentEvent.event, 'user::new')
+})
+
+after(async () => {
   Event.restore()
 })
