@@ -21,7 +21,7 @@ class AuthController extends BaseController {
     try {
       const user = await User.findByOrFail(request.only(['confirmation_token']))
       await AuthService.confirmAccount(user)
-      return response.redirect(AuthService.frontAppUrl())
+      return response.redirect(AuthService.FRONT_APP_URL)
     } catch (e) {
       this.handleException(response, e)
     }
@@ -30,9 +30,9 @@ class AuthController extends BaseController {
   async login ({ request, auth, response }) {
     try {
       const params = this._userCredentials(request)
-      const user = await User.findByOrFail({ email: params.email, confirmation_token: null })
-      const { token, refreshToken } = await AuthService.login(auth, params)
-      response.header('Authorization', `Bearer ${token}`).header('refreshToken', refreshToken).send(user)
+      const user = await User.query().confirmed().where({ email: params.email }).firstOrFail()
+      const tokenObject = await AuthService.login(auth, params)
+      this._returnTokenToUser(response, user, tokenObject)
     } catch (e) {
       this.handleException(response, e)
     }
@@ -41,7 +41,7 @@ class AuthController extends BaseController {
   async resetPassword ({ request, response }) {
     try {
       const user = await User.findByOrFail(request.only(['email']))
-      await AuthService.resetPassword(request, user)
+      await AuthService.resetPassword(request.all().restore_password_url, user)
       return response.json({ message: Antl.formatMessage('message.ResetLetterWasSent') })
     } catch (e) {
       this.handleException(response, e)
@@ -69,7 +69,7 @@ class AuthController extends BaseController {
 
   async logout ({ request, response, auth }) {
     try {
-      await auth.authenticator('jwt').revokeTokens()
+      await auth.revokeTokens()
       return response.json({ message: Antl.formatMessage('message.Logout') })
     } catch (e) {
       this.handleException(response, e)
@@ -85,7 +85,7 @@ class AuthController extends BaseController {
   }
 
   _refreshToken (request) {
-    return request.only(['refresh_token'])['refresh_token']
+    return request.all()['refresh_token']
   }
 
   _returnTokenToUser (response, body, { token, refreshToken }) {

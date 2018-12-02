@@ -7,7 +7,7 @@ trait('DatabaseTransactions')
 trait('Test/ApiClient')
 const AuthService = use('AuthService')
 const nock = require('nock')
-nock(AuthService.frontAppUrl())
+nock(AuthService.FRONT_APP_URL)
   .get('/')
   .reply(200, 'domain matched')
 

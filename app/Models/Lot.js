@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
@@ -26,6 +26,7 @@ class Lot extends Model {
     return query.select('lots.*').leftJoin('bids', 'lots.id', 'bids.lot_id')
       .whereRaw('bids.user_id = ? or lots.user_id = ?', [user.id, user.id])
   }
+
   static scopeInProcessOrUserLot (query, userId) {
     const inProcessStatus = 'inProcess'
     return query.whereRaw('status = ? or user_id = ?', [inProcessStatus, userId])
@@ -34,5 +35,6 @@ class Lot extends Model {
   bids () {
     return this.hasMany('App/Models/Bid').orderBy('created_at', 'desc')
   }
+}
 
-module.exports = Lot;
+module.exports = Lot

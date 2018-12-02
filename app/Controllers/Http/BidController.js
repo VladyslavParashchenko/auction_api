@@ -15,7 +15,7 @@ class BidController extends BaseController {
   }
 
   _bidParams (request, auth) {
-    const bidParams = this.paramsFromRequest(request, ['proposed_price'])
+    const bidParams = request.only(['proposed_price'])
     bidParams.user_id = auth.user.id
     bidParams.lot_id = request.lot.id
     return bidParams

@@ -30,7 +30,7 @@ test('should return error password validate error', async ({ client }) => {
 })
 
 test('should return error, because user not confirmed', async ({ client }) => {
-  const user = await Factory.model('App/Models/User').create({ confirmation_token: '1111111111111111111' })
+  const user = await Factory.model('App/Models/User').create({ confirmed_at: null })
   const response = await client
     .post(Route.url('login'))
     .send({ email: user.email, password: 'password' })

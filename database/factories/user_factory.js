@@ -9,7 +9,8 @@ const factory = async (faker, i, data) => {
     phone: data.phone || faker.phone(),
     confirmation_token: data.confirmation_token || null,
     password: data.password || 'password',
-    restore_password_token: data.restore_password_token || ''
+    restore_password_token: data.restore_password_token || '',
+    confirmed_at: data.hasOwnProperty('confirmed_at') ? data.confirmed_at : (new Date())
   }
 }
 

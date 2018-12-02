@@ -1,16 +1,9 @@
 'use strict'
 const crypto = require('crypto')
 const Event = use('Event')
+const Config = use('Adonis/Src/Config')
 
 class AuthService {
-  constructor () {
-    this.Config = use('Adonis/Src/Config')
-    this.user = use(this.getValueFromConfig('userModel'))
-  }
-
-  getValueFromConfig (name) {
-    return this.Config.get(`authProvider.${name}`)
-  }
 
   async login (auth, { email, password }) {
     let tokenObject = await auth.withRefreshToken().attempt(email, password)
@@ -21,10 +14,10 @@ class AuthService {
     return crypto.randomBytes(24).toString('hex')
   }
 
-  async resetPassword (request, user) {
+  async resetPassword (restorePasswordUrl, user) {
     user.restore_password_token = this.generateToken()
     await user.save()
-    await this.sendRestorePasswordLetter(request.all().restore_password_url, user)
+    await this.sendRestorePasswordLetter(restorePasswordUrl, user)
   }
 
   async sendRestorePasswordLetter (restorePasswordUrl, user) {
@@ -55,8 +48,8 @@ class AuthService {
     Event.fire('user::new', user)
   }
 
-  frontAppUrl () {
-    return this.getValueFromConfig('confirmSuccessUrl')
+  get FRONT_APP_URL () {
+    return Config.get(`authProvider.confirmSuccessUrl`)
   }
 }
 

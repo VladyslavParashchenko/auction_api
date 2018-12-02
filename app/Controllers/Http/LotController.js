@@ -76,7 +76,7 @@ class LotController extends BaseController {
   }
 
   _lotParams (request) {
-    return this.paramsFromRequest(request, ['title', 'image', 'description', 'start_time', 'end_time', 'current_price',
+    return request.only(['title', 'image', 'description', 'start_time', 'end_time', 'current_price',
       'estimated_price'])
   }
 }
