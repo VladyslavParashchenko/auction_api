@@ -8,7 +8,9 @@ Event.on('user::restorePassword', 'User.restorePassword')
 /*
   Lot events
  */
-Event.on('lot::purchased', 'Lot.purchased')
+Event.on('lot::created', 'Lot.created')
+Event.on('lot::updated', 'Lot.updated')
+Event.on('lot::foundWinner', 'Lot.foundWinner')
 
 Event.on('lot::updateCurrentPrice', async (lot) => {
   await lot.update({ 'current_price': 4 })

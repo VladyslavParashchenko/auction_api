@@ -4,6 +4,7 @@ const BaseController = use('App/Controllers/Http/BaseController')
 const Uploader = use('Uploader')
 const Lot = use('App/Models/Lot')
 const BidPostSerializer = use('BidPostSerializerService')
+const Event = use('Event')
 class LotController extends BaseController {
   async store ({ response, request, auth }) {
     try {
@@ -24,6 +25,7 @@ class LotController extends BaseController {
       const filePath = await this.saveFile(request, 'image')
       lot.image = filePath || lot.image
       await lot.save()
+      Event.fire('lot::updated', { lotId: lot.id, lotUpdatedField: this._lotParams(request) })
       return response.json(lot)
     } catch (e) {
       this.handleException(e, response)

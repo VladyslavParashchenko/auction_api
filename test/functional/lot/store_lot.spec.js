@@ -1,15 +1,21 @@
 'use strict'
 
-const { test, trait, beforeEach } = use('Test/Suite')('Lot - store')
+const { test, trait, beforeEach, before, after, afterEach } = use('Test/Suite')('Lot - store')
 const Route = use('Route')
 const Factory = use('Factory')
 const dayjs = require('dayjs')
+const queue = require('kue').createQueue()
 const validateErrorMaker = require('../../helper/generateValidatorError.js')
 const Helpers = use('Helpers')
+const Database = use('Database')
+
 trait('Auth/Client')
-trait('DatabaseTransactions')
 trait('Test/ApiClient')
 let data
+
+before(function () {
+  queue.testMode.enter()
+})
 
 beforeEach(async () => {
   data = {
@@ -124,4 +130,26 @@ test('should return error, because end_time less then start_time', async ({ clie
     .end()
   response.assertStatus(400)
   response.assertJSONSubset(validateErrorMaker.generateError('after', 'end_time'))
+})
+
+test('should create job for new lot', async ({ client, assert }) => {
+  const user = await Factory.model('App/Models/User').create()
+  const response = await client
+    .post(Route.url('lots.store'))
+    .send(data)
+    .loginVia(user)
+    .end()
+  response.assertStatus(200)
+  assert.equal(queue.testMode.jobs.length, 2)
+  assert.equal(queue.testMode.jobs[0].type, 'lot_start')
+  assert.equal(queue.testMode.jobs[1].type, 'lot_end')
+})
+
+afterEach(function () {
+  queue.testMode.clear()
+})
+
+after(async () => {
+  queue.testMode.exit()
+  await Database.table('users').delete()
 })

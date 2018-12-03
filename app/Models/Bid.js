@@ -11,9 +11,7 @@ class Bid extends Model {
       const lot = await bidInstance.lot().fetch()
       lot.current_price = bidInstance.proposed_price
       if (lot.estimated_price < bidInstance.proposed_price) {
-        lot.winner_bid_id = bidInstance.id
-        lot.status = 'closed'
-        Event.fire('lot::purchased', lot)
+        Event.fire('lot::foundWinner', lot)
       }
       await lot.save()
     })

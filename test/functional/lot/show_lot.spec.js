@@ -1,14 +1,14 @@
 'use strict'
 
-const { test, trait } = use('Test/Suite')('Lot - show')
-const Route = use('Route')
-const Factory = use('Factory')
-const Lot = use('App/Models/Lot')
-const Antl = use('Antl')
+const { test, trait, before, after } = use('Test/Suite')('Lot - show')
+const { Route, Event, Factory, Lot, Antl, Database } = require('../../helper/dependencyHelper.js')
 trait('Auth/Client')
 trait('DatabaseTransactions')
 trait('Test/ApiClient')
 
+before(function () {
+  Event.fake()
+})
 test('should return lot', async ({ client, assert }) => {
   const user = await Factory.model('App/Models/User').create()
   const lot = await Factory.model('App/Models/Lot').create({ user_id: user.id })
@@ -70,4 +70,8 @@ test('should return lot with bids, which serialized correct ', async ({ client, 
   })
   response.assertStatus(200)
   response.assertJSONSubset({ 'bids': serializedBids })
+})
+
+after(async () => {
+  Event.restore()
 })

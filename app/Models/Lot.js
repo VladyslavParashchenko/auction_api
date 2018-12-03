@@ -2,12 +2,16 @@
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
-
+const Event = use('Event')
 class Lot extends Model {
   static boot () {
     super.boot()
     this.addHook('beforeCreate', async (lotInstance) => {
       lotInstance.status = 'pending'
+    })
+
+    this.addHook('afterCreate', async (lotInstance) => {
+      Event.fire('lot::created', lotInstance)
     })
   }
 
@@ -44,6 +48,10 @@ class Lot extends Model {
   }
   bids () {
     return this.hasMany('App/Models/Bid').orderBy('created_at', 'desc')
+  }
+
+  user () {
+    return this.belongsTo('App/Models/User')
   }
 }
 

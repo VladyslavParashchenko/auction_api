@@ -1,12 +1,14 @@
 'use strict'
 
-const { test, trait } = use('Test/Suite')('Lot - index')
-const Route = use('Route')
-const Factory = use('Factory')
-const Lot = use('App/Models/Lot')
+const { test, trait, before, after } = use('Test/Suite')('Lot - index')
+const { Route, Event, Factory, Lot } = require('../../helper/dependencyHelper.js')
 trait('Auth/Client')
 trait('DatabaseTransactions')
 trait('Test/ApiClient')
+
+before(function () {
+  Event.fake()
+})
 
 test('should return lots list', async ({ client, assert }) => {
   const user = await Factory.model('App/Models/User').create()
@@ -41,6 +43,10 @@ test('should return error, because user doesn\'t login', async ({ client }) => {
     'status': 401
   }
   )
+})
+
+after(async () => {
+  Event.restore()
 })
 
 test('should return user lots', async ({ client, assert }) => {

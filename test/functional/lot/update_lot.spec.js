@@ -1,14 +1,17 @@
 'use strict'
 
-const { test, trait } = use('Test/Suite')('Lot - update')
+const { test, trait, before, after } = use('Test/Suite')('Lot - update')
 const Route = use('Route')
 const Factory = use('Factory')
 const Antl = use('Antl')
+const Database = use('Database')
+const queue = require('kue').createQueue()
 const dayjs = require('dayjs')
 trait('Auth/Client')
-trait('DatabaseTransactions')
 trait('Test/ApiClient')
-
+before(function () {
+  queue.testMode.enter()
+})
 const oldData = {
   title: 'lot_title',
   current_price: 1000,
@@ -68,4 +71,10 @@ test('should return error, when update lot, which have status inProcess', async 
     .end()
   response.assertStatus(404)
   response.assertError({ message: Antl.formatMessage('message.ModelNotFoundException') })
+})
+
+after(async () => {
+  await Database.table('users').delete()
+  queue.testMode.clear()
+  queue.testMode.exit()
 })
