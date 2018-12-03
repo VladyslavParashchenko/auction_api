@@ -4,7 +4,6 @@ const Event = use('Event')
 const Config = use('Adonis/Src/Config')
 
 class AuthService {
-
   async login (auth, { email, password }) {
     let tokenObject = await auth.withRefreshToken().attempt(email, password)
     return tokenObject
