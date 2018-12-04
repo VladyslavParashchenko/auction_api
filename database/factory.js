@@ -12,10 +12,8 @@
 */
 
 /** @type {import('@adonisjs/lucid/src/Factory')} */
-// const Factory = use('Factory')
-
-// Factory.blueprint('App/Models/User', (faker) => {
-//   return {
-//     username: faker.username()
-//   }
-// })
+const Factory = use('Factory')
+const factories = require('./factories')
+for (let factoryName in factories) {
+  Factory.blueprint(factoryName, factories[factoryName])
+}

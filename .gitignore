@@ -16,3 +16,5 @@ dist
 yarn.lock
 shrinkwrap.yaml
 package-lock.json
+.env
+.env.testing

@@ -4,21 +4,15 @@
 const Model = use('Model')
 
 /** @type {import('@adonisjs/framework/src/Hash')} */
-const Hash = use('Hash')
 
 class User extends Model {
   static boot () {
     super.boot()
+    this.addHook('beforeSave', 'UserHook.hashPassword')
+  }
 
-    /**
-     * A hook to hash the user password before saving
-     * it to the database.
-     */
-    this.addHook('beforeSave', async (userInstance) => {
-      if (userInstance.dirty.password) {
-        userInstance.password = await Hash.make(userInstance.password)
-      }
-    })
+  static scopeConfirmed (query) {
+    return query.whereNotNull('confirmed_at')
   }
 
   /**
@@ -33,6 +27,22 @@ class User extends Model {
    */
   tokens () {
     return this.hasMany('App/Models/Token')
+  }
+
+  static get visible () {
+    return ['email', 'first_name', 'last_name', 'phone', 'birth_day']
+  }
+
+  lots () {
+    return this.hasMany('App/Models/Lot')
+  }
+
+  bids () {
+    return this.hasMany('App/Models/Bid')
+  }
+
+  orders () {
+    return this.hasMany('App/Models/Order')
   }
 }
 

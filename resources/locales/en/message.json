@@ -1,0 +1,12 @@
+{
+  "UserNotFound": "User not found",
+  "ResetLetterWasSent": "Letter for restore password was sent",
+  "PasswordChanged": "User password was changed",
+  "PasswordNotChanged": "User password was not changed",
+  "TokenRefresh": "Token was refresh",
+  "TokenNotRefresh": "Token was not refresh",
+  "LogoutError": "Logout error",
+  "Logout": "You logout",
+  "ModelNotFoundException": "ModelNotFoundException",
+  "InvalidRefreshToken": "InvalidRefreshToken"
+}
