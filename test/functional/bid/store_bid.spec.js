@@ -3,7 +3,6 @@
 const { test, trait, after, before } = use('Test/Suite')('Bid - store')
 const Route = use('Route')
 const Factory = use('Factory')
-const validateErrorMaker = require('../../helper/generateValidatorError.js')
 const Antl = use('Antl')
 const Event = use('Event')
 const Database = use('Database')
@@ -46,13 +45,13 @@ test('should return error, proposed price less than current price', async ({ cli
     .accept('json')
     .end()
   response.assertStatus(400)
-  response.assertJSONSubset(validateErrorMaker.generateError('above', 'proposed_price'))
+  response.assertJSONSubset({ message: Antl.formatMessage('message.ProposedPriceError') })
 })
 
 test('should return error, when user try add bid to own lot', async ({ client }) => {
   const user = await Factory.model('App/Models/User').create()
   const lot = await Factory.model('App/Models/Lot').create({ user_id: user.id })
-  const data = { proposed_price: 1000 }
+  const data = { proposed_price: lot.current_price + 100 }
   await Lot.query().update({ status: 'inProcess' })
   const response = await client
     .post(Route.url('bids.store', { lot_id: lot.id }))
@@ -60,7 +59,7 @@ test('should return error, when user try add bid to own lot', async ({ client })
     .loginVia(user)
     .accept('json')
     .end()
-  response.assertStatus(400)
+  response.assertStatus(403)
   response.assertError({ message: Antl.formatMessage('message.YouCanNotAddBidForYourOwnLot') })
 })
 

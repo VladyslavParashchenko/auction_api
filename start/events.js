@@ -1,10 +1,9 @@
 const Event = use('Event')
-
 /*
   Auth events
  */
 Event.on('user::new', 'User.new')
-Event.on('user::restore_password', 'User.restore_password')
+Event.on('user::restorePassword', 'User.restorePassword')
 
 /*
   Lot events

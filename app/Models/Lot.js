@@ -2,6 +2,7 @@
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
+
 class Lot extends Model {
   static boot () {
     super.boot()
@@ -22,16 +23,25 @@ class Lot extends Model {
     return query.where('status', 'closed')
   }
 
-  static scopeMyLots (query, user) {
+  static scopeUserLots (query, userId) {
     return query.select('lots.*').leftJoin('bids', 'lots.id', 'bids.lot_id')
-      .whereRaw('bids.user_id = ? or lots.user_id = ?', [user.id, user.id])
+      .whereRaw('bids.user_id = ? or lots.user_id = ?', [userId, userId])
   }
 
-  static scopeInProcessOrUserLot (query, userId) {
+  static scopeLotAvailableToUser (query, { lotId, userId }) {
     const inProcessStatus = 'inProcess'
-    return query.whereRaw('status = ? or user_id = ?', [inProcessStatus, userId])
+    return query.select('lots.*').leftJoin('bids', 'lots.id', 'bids.lot_id')
+      .whereRaw('(bids.user_id = ? or lots.user_id = ? or status = ?) and (lots.id = ?)',
+        [userId, userId, inProcessStatus, lotId])
   }
 
+  static scopeFilter (query, { filter, userId }) {
+    if (filter.ownLot === 'true') {
+      return query.userLots(userId)
+    } else {
+      return query.inProcess()
+    }
+  }
   bids () {
     return this.hasMany('App/Models/Bid').orderBy('created_at', 'desc')
   }

@@ -23,7 +23,8 @@ const providers = [
   '@adonisjs/antl/providers/AntlProvider',
   path.join(__dirname, '..', 'providers', 'Auth/Provider'),
   path.join(__dirname, '..', 'providers', 'BidPostSerializer/Provider'),
-  path.join(__dirname, '..', 'providers', 'Uploader/Provider')
+  path.join(__dirname, '..', 'providers', 'Uploader/Provider'),
+  path.join(__dirname, '..', 'providers', 'Auth/Provider')
 ]
 
 /*

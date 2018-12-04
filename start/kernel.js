@@ -36,7 +36,7 @@ const globalMiddleware = [
 const namedMiddleware = {
   auth: 'Adonis/Middleware/Auth',
   guest: 'Adonis/Middleware/AllowGuestOnly',
-  setLotToRequest: 'App/Middleware/SetLotToRequest',
+  checkBidProposedPrice: 'App/Middleware/CheckBidProposedPrice',
   checkBidCreator: 'App/Middleware/CheckBidCreator'
 }
 

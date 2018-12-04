@@ -9,12 +9,13 @@ class Bid extends Model {
     super.boot()
     this.addHook('afterSave', async (bidInstance) => {
       const lot = await bidInstance.lot().fetch()
+      lot.current_price = bidInstance.proposed_price
       if (lot.estimated_price < bidInstance.proposed_price) {
         lot.winner_bid_id = bidInstance.id
         lot.status = 'closed'
-        await lot.save()
         Event.fire('lot::purchased', lot)
       }
+      await lot.save()
     })
   }
 

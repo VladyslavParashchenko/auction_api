@@ -1,23 +1,21 @@
 'use strict'
 const BaseController = use('App/Controllers/Http/BaseController')
-
-const Bid = use('App/Models/Bid')
+const Lot = use('App/Models/Lot')
 
 class BidController extends BaseController {
-  async store ({ request, response, auth }) {
+  async store ({ request, response, auth, params }) {
     try {
-      const bid = await Bid.create(this._bidParams(request, auth))
-      await bid.lot().update({ 'current_price': bid.proposed_price })
+      const lot = await Lot.findOrFail(params.lot_id)
+      const bid = await lot.bids().create(await this._bidParams(request, auth))
       response.json(bid)
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
   _bidParams (request, auth) {
     const bidParams = request.only(['proposed_price'])
     bidParams.user_id = auth.user.id
-    bidParams.lot_id = request.lot.id
     return bidParams
   }
 }

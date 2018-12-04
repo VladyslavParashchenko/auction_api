@@ -1,7 +1,7 @@
 'use strict'
 
 const BaseController = use('App/Controllers/Http/BaseController')
-const UploadService = use('LotImageUploader')
+const Uploader = use('Uploader')
 const Lot = use('App/Models/Lot')
 const BidPostSerializer = use('BidPostSerializerService')
 class LotController extends BaseController {
@@ -13,7 +13,7 @@ class LotController extends BaseController {
       await auth.user.lots().save(lot)
       return response.json(lot)
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
@@ -26,53 +26,49 @@ class LotController extends BaseController {
       await lot.save()
       return response.json(lot)
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
   async destroy ({ response, request, auth, params }) {
     try {
-      const lot = await auth.user.lots().where('id', params.id).firstOrFail()
+      const lot = await auth.user.lots().pending().where('id', params.id).firstOrFail()
       await lot.delete()
       return response.json(lot)
     } catch (e) {
-      this.handleException(response, e)
-    }
-  }
-
-  async my ({ response, request, auth }) {
-    try {
-      const lots = await Lot.query().myLots(auth.user).paginate(...this.paginationParams(request))
-      return response.json(lots)
-    } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
   async show ({ response, request, auth, params }) {
     try {
-      const lot = await Lot.query().inProcessOrUserLot(auth.user.id).where('id', params.id).with('bids').firstOrFail()
+      const lot = await Lot.query().lotAvailableToUser({ userId: auth.user.id, lotId: params.id }).with('bids').firstOrFail()
       let serializedLot = lot.toJSON()
-      serializedLot = BidPostSerializer.reformatBids(serializedLot, auth.user.id)
+      serializedLot = BidPostSerializer.markBids(serializedLot, auth.user.id)
       return response.json(serializedLot)
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
-  async index ({ response, request }) {
+  async index ({ response, request, auth }) {
     try {
-      const lots = await Lot.query().inProcess().paginate(...this.paginationParams(request))
+      const lots = await Lot.query().filter({ filter: request.all(), userId: auth.user.id })
+        .paginate(...this.paginationParams(request.all()))
       return response.status(200).json(lots)
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
   async saveFile (request, fieldName) {
-    UploadService.setRequest(request)
-    const filePath = await UploadService.uploadFile(fieldName)
-    return filePath
+    const file = request.file(fieldName)
+    if (file !== null) {
+      const filePath = await Uploader.uploadFile(file)
+      return filePath
+    } else {
+      return ''
+    }
   }
 
   _lotParams (request) {

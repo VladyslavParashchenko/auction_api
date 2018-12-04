@@ -1,16 +1,13 @@
 
 const { ServiceProvider } = require('@adonisjs/fold')
 
-class BidPostSerializerServiceProvider extends ServiceProvider {
+class UploaderProvider extends ServiceProvider {
   register () {
-    const uploaders = use('App/Uploader')
-    for (let uploaderPath in uploaders) {
-      this.app.singleton(uploaders[uploaderPath], () => {
-        const Uploader = use(uploaderPath)
-        return new Uploader()
-      })
-    }
+    this.app.singleton('Uploader', () => {
+      const Uploader = use('App/Uploaders/Uploader')
+      return new Uploader()
+    })
   }
 }
 
-module.exports = BidPostSerializerServiceProvider
+module.exports = UploaderProvider

@@ -13,7 +13,7 @@ class AuthController extends BaseController {
       await AuthService.sendConfirmationLetter(user)
       return response.send(user)
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
@@ -23,7 +23,7 @@ class AuthController extends BaseController {
       await AuthService.confirmAccount(user)
       return response.redirect(AuthService.FRONT_APP_URL)
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
@@ -34,7 +34,7 @@ class AuthController extends BaseController {
       const tokenObject = await AuthService.login(auth, params)
       this._returnTokenToUser(response, user, tokenObject)
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
@@ -44,7 +44,7 @@ class AuthController extends BaseController {
       await AuthService.resetPassword(request.all().restore_password_url, user)
       return response.json({ message: Antl.formatMessage('message.ResetLetterWasSent') })
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
@@ -54,7 +54,7 @@ class AuthController extends BaseController {
       const tokenObject = await AuthService.setNewPassword(user, auth, request.all())
       this._returnTokenToUser(response, user, tokenObject)
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
@@ -63,7 +63,7 @@ class AuthController extends BaseController {
       const tokenObject = await auth.generateForRefreshToken(this._refreshToken(request))
       this._returnTokenToUser(response, { message: Antl.formatMessage('message.TokenRefresh') }, tokenObject)
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 
@@ -72,7 +72,7 @@ class AuthController extends BaseController {
       await auth.revokeTokens()
       return response.json({ message: Antl.formatMessage('message.Logout') })
     } catch (e) {
-      this.handleException(response, e)
+      this.handleException(e, response)
     }
   }
 

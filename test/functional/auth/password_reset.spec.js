@@ -24,7 +24,7 @@ test('should reset password for user', async ({ client, assert }) => {
     { message: Antl.formatMessage('message.ResetLetterWasSent') }
   )
   const recentEvent = Event.pullRecent()
-  assert.equal(recentEvent.event, 'user::restore_password')
+  assert.equal(recentEvent.event, 'user::restorePassword')
   Event.restore()
 })
 

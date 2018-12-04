@@ -27,6 +27,7 @@ test('should create new Lot', async ({ client }) => {
     .post(Route.url('lots.store'))
     .send(data)
     .loginVia(user)
+    .accept('json')
     .end()
   response.assertStatus(200)
   response.assertJSONSubset({
@@ -69,7 +70,7 @@ test('should return error, because image has not valid type', async ({ client })
     .accept('json')
     .end()
   response.assertStatus(400)
-  response.assertJSONSubset({ 'message': 'Invalid file type plain or text. Only image is allowed' })
+  response.assertJSONSubset(validateErrorMaker.generateError('fileExt', 'image'))
 })
 
 test('should return error, because current_price have negative value', async ({ client }) => {

@@ -1,5 +1,5 @@
 'use strict'
-const { test, trait, beforeEach, after, before } = use('Test/Suite')('Auth - registration')
+const { test, trait, beforeEach, before, after } = use('Test/Suite')('Auth - registration')
 const validateErrorMaker = require('../../helper/generateValidatorError.js')
 const Route = use('Route')
 const Factory = use('Factory')
@@ -8,6 +8,9 @@ let data
 trait('DatabaseTransactions')
 trait('Test/ApiClient')
 
+before(async () => {
+  Event.fake()
+})
 beforeEach(async () => {
   data = {
     email: 'test@email.com',
@@ -19,18 +22,12 @@ beforeEach(async () => {
     birth_day: new Date(1990, 1, 1)
   }
 })
-before(async () => {
-  Event.fake()
-})
+
 test('should return error', async ({ client }) => {
   const response = await client
     .post(Route.url('registration'))
     .end()
   response.assertStatus(400)
-})
-
-test('should return validate unique email error', async ({ client }) => {
-  await Factory.model('App/Models/User').create({ email: data['email'] })
 })
 
 test('should return error', async ({ client }) => {

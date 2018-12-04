@@ -2,7 +2,7 @@
 const Antl = use('Antl')
 
 class BaseController {
-  handleException (response, exception) {
+  handleException (exception, response) {
     switch (exception.name) {
       case 'ModelNotFoundException':
         response.status(404).json({ message: Antl.formatMessage('message.ModelNotFoundException') })
@@ -18,10 +18,7 @@ class BaseController {
     }
   }
 
-  paginationParams (request) {
-    const params = request.all()
-    const page = params['page'] || 1
-    const perPage = params['per_page'] || 10
+  paginationParams ({ page = 1, perPage = 10 }) {
     return [page, perPage]
   }
 }
