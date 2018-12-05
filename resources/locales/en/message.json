@@ -1,5 +1,6 @@
 {
   "UserNotFound": "User not found",
+  "LotNotFound": "Lot not found",
   "ResetLetterWasSent": "Letter for restore password was sent",
   "PasswordChanged": "User password was changed",
   "PasswordNotChanged": "User password was not changed",
@@ -8,5 +9,7 @@
   "LogoutError": "Logout error",
   "Logout": "You logout",
   "ModelNotFoundException": "ModelNotFoundException",
-  "InvalidRefreshToken": "InvalidRefreshToken"
+  "InvalidRefreshToken": "InvalidRefreshToken",
+  "ProposedPriceError": "You can not create bid with proposed price, which less than previous price",
+  "YouCanNotAddBidForYourOwnLot": "You can't add bid for your own lot"
 }

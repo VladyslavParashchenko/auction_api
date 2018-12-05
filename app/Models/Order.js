@@ -5,11 +5,11 @@ const Model = use('Model')
 
 class Order extends Model {
   user () {
-    this.belongsTo('App/Models/User')
+    return this.belongsTo('App/Models/User')
   }
 
   bid () {
-    this.belongsTo('App/Models/Bid')
+    return this.belongsTo('App/Models/Bid')
   }
 }
 

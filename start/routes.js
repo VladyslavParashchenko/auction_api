@@ -25,3 +25,12 @@ Route.group(() => {
   Route.post('refresh_token', 'AuthController.refresh').as('refreshToken')
   Route.delete('logout', 'AuthController.logout').middleware('auth').as('logout')
 }).prefix('/api/auth')
+
+Route.group(() => {
+  Route.get('lots/my', 'LotController.my').middleware(['auth']).as('myLots')
+  Route.resource('lots', 'LotController').apiOnly().validator(new Map([
+    [['lots.store'], ['LotStoreValidation']],
+    [['lots.update'], ['LotUpdateValidation']]
+  ])).middleware(['auth'])
+  Route.post('/lots/:lot_id/bids', 'BidController.store').validator('BidStoreValidation').middleware(['auth', 'checkBidProposedPrice', 'checkBidCreator']).as('bids.store')
+}).prefix('/api')

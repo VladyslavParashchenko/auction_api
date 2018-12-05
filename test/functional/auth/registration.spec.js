@@ -7,6 +7,7 @@ const Event = use('Event')
 let data
 trait('DatabaseTransactions')
 trait('Test/ApiClient')
+
 before(async () => {
   Event.fake()
 })
@@ -20,6 +21,13 @@ beforeEach(async () => {
     password_confirmation: 'password',
     birth_day: new Date(1990, 1, 1)
   }
+})
+
+test('should return error', async ({ client }) => {
+  const response = await client
+    .post(Route.url('registration'))
+    .end()
+  response.assertStatus(400)
 })
 
 test('should return error', async ({ client }) => {
@@ -69,8 +77,8 @@ test('should create new user and return user data in response', async ({ client 
 test('should run event for send email', async ({ client, assert }) => {
   const response = await client
     .post(Route.url('registration'))
-    .accept('json')
     .send(data)
+    .accept('json')
     .end()
   response.assertStatus(200)
   response.assertJSONSubset({

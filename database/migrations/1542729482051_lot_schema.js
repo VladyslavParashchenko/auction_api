@@ -7,7 +7,7 @@ class LotSchema extends Schema {
   up () {
     this.create('lots', (table) => {
       table.increments()
-      table.integer('user_id').unsigned().index().references('id').inTable('users')
+      table.integer('user_id').unsigned().index().references('id').inTable('users').onDelete('CASCADE')
       table.timestamps()
     })
   }

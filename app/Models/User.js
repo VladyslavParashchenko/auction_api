@@ -30,7 +30,7 @@ class User extends Model {
   }
 
   static get visible () {
-    return ['email', 'first_name', 'last_name', 'phone', 'birth_day']
+    return ['id', 'email', 'first_name', 'last_name', 'phone', 'birth_day']
   }
 
   lots () {
