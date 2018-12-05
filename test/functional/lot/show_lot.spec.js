@@ -1,7 +1,7 @@
 'use strict'
 
 const { test, trait, before, after } = use('Test/Suite')('Lot - show')
-const { Route, Event, Factory, Lot, Antl, Database } = require('../../helper/dependencyHelper.js')
+const { Route, Event, Factory, Lot, Antl } = require('../../helper/dependencyHelper.js')
 trait('Auth/Client')
 trait('DatabaseTransactions')
 trait('Test/ApiClient')

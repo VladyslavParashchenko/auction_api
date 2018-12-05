@@ -1,7 +1,7 @@
 'use strict'
 
 const { test, trait, before, after } = use('Test/Suite')('Lot - delete')
-const { Route, Event, Factory, Lot, Antl, Database } = require('../../helper/dependencyHelper.js')
+const { Route, Factory, Antl, Database } = require('../../helper/dependencyHelper.js')
 const dayjs = require('dayjs')
 const queue = require('kue').createQueue()
 trait('Auth/Client')
@@ -43,7 +43,6 @@ test('should return error, when update other user lot', async ({ client }) => {
 })
 
 after(async () => {
-  console.log(JSON.stringify(queue.testMode.jobs))
   await Database.table('users').delete()
   queue.testMode.clear()
   queue.testMode.exit()

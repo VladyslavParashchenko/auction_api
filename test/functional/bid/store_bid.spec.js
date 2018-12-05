@@ -5,13 +5,13 @@ const Route = use('Route')
 const Factory = use('Factory')
 const Antl = use('Antl')
 const queue = require('kue').createQueue()
-const Mail = use('Mail')
+const Event = use('Event')
 const Database = use('Database')
 const Lot = use('App/Models/Lot')
 trait('Auth/Client')
 trait('Test/ApiClient')
 before(async () => {
-  Mail.fake()
+  Event.fake()
 })
 
 before(function () {
@@ -80,14 +80,12 @@ test('should run event, which is responsible for the purchase of the lot', async
     .accept('json')
     .end()
   response.assertStatus(200)
-  const recentEvent = Mail.pullRecent()
-  console.log(recentEvent)
-  console.log(await lot.reload())
-  // assert.equal(recentEvent.event, 'lot::foundWinner')
+  const recentEvent = Event.pullRecent()
+  assert.equal(recentEvent.event, 'lot::foundWinner')
 })
 
 after(async () => {
-  Mail.restore()
+  Event.restore()
   await Database.table('users').delete()
   queue.testMode.clear()
   queue.testMode.exit()

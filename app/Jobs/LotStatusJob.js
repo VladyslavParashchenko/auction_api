@@ -1,7 +1,6 @@
 const kue = require('kue')
 const Env = use('Env')
 const Event = use('Event')
-const Lot = use('App/Models/Lot')
 const Logger = use('Logger')
 
 class LotStatusJob {
@@ -22,11 +21,7 @@ class LotStatusJob {
 
   async lotStartProcessing (job, done) {
     try {
-      console.log(job.data)
-      const lot = await Lot.where({ id: job.data.id, lot_start_job_id: job.id }).firstOrFail()
-      lot.status = 'inProcess'
-      lot.lot_start_job_id = null
-      await lot.save()
+      Event.fire('lot::started', { jobId: job.id, lotId: job.data.id })
     } catch (e) {
       Logger.warning('Event error: %s', e.message)
     }
@@ -35,11 +30,7 @@ class LotStatusJob {
 
   async lotEndProcessing (job, done) {
     try {
-      const lot = await Lot.where({ id: job.data.id, lot_end_job_id: job.id }).firstOrFail()
-      lot.status = 'closed'
-      lot.lot_start_job_id = null
-      await lot.save()
-      Event.fire('lot::foundWinner', lot)
+      Event.fire('lot::foundWinner', { jobId: job.id, lotId: job.data.id })
     } catch (e) {
       Logger.warning('Event error: %s', e.message)
     }

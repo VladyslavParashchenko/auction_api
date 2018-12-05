@@ -1,9 +1,8 @@
 'use strict'
 
 const { test, trait, before, after } = use('Test/Suite')('Lot - index')
-const { Route, Event, Factory, Lot } = require('../../helper/dependencyHelper.js')
+const { Route, Event, Factory, Lot, Database } = require('../../helper/dependencyHelper.js')
 trait('Auth/Client')
-trait('DatabaseTransactions')
 trait('Test/ApiClient')
 
 before(function () {
@@ -32,7 +31,7 @@ test('should return lots list', async ({ client, assert }) => {
 test('should return error, because user doesn\'t login', async ({ client }) => {
   const response = await client
     .get(Route.url('lots.index'))
-    .query({ page: 1, per_page: 5 })
+    .query({ page: 1, perPage: 5 })
     .accept('json')
     .end()
   response.assertStatus(401)
@@ -43,10 +42,6 @@ test('should return error, because user doesn\'t login', async ({ client }) => {
     'status': 401
   }
   )
-})
-
-after(async () => {
-  Event.restore()
 })
 
 test('should return user lots', async ({ client, assert }) => {
@@ -99,4 +94,9 @@ test('should return user lots and lot, which have bids belongs to user, with pag
       id: otherUserLot.id
     }]
   })
+})
+
+after(async () => {
+  Event.restore()
+  await Database.table('users').delete()
 })
