@@ -43,7 +43,7 @@ class AuthService {
 
   async sendConfirmationLetter (user) {
     user.confirmation_token = this.generateToken()
-    user = await user.save()
+    await user.save()
     Event.fire('user::new', user)
   }
 

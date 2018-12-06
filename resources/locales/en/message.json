@@ -10,5 +10,6 @@
   "ModelNotFoundException": "ModelNotFoundException",
   "InvalidRefreshToken": "InvalidRefreshToken",
   "ProposedPriceError": "You can not create bid with proposed price, which less than previous price",
-  "YouCanNotAddBidForYourOwnLot": "You can't add bid for your own lot"
+  "YouCanNotAddBidForYourOwnLot": "You can't add bid for your own lot",
+  "LotNotFound": "Lot not found"
 }

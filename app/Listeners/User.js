@@ -4,6 +4,7 @@ const Mail = use('Mail')
 const Env = use('Env')
 class User {
   async new (user) {
+    console.log(user)
     const link = `${Env.get('APP_URL')}/api/auth/confirmation?confirmation_token=${user.confirmation_token}`
     await Mail.send('emails.user_register', { user, link }, (message) => {
       message.to(user.email)

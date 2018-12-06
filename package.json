@@ -31,6 +31,7 @@
     "@adonisjs/mail": "^3.0.9",
     "@adonisjs/validator": "^5.0.6",
     "@adonisjs/vow": "^1.0.17",
+    "@adonisjs/websocket": "^1.0.11",
     "kue": "^0.11.6",
     "pg": "^7.6.1"
   },
