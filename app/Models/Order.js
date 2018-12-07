@@ -4,16 +4,19 @@
 const Model = use('Model')
 
 class Order extends Model {
-  static get table () {
-    return 'order_items'
+  static boot () {
+    super.boot()
+    this.addHook('beforeCreate', async (orderInstance) => {
+      orderInstance.status = 'pending'
+    })
   }
 
   user () {
     return this.belongsTo('App/Models/User')
   }
 
-  bid () {
-    return this.belongsTo('App/Models/Bid')
+  lot () {
+    return this.belongsTo('App/Models/Lot')
   }
 }
 

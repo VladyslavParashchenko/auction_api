@@ -37,7 +37,11 @@ const namedMiddleware = {
   auth: 'Adonis/Middleware/Auth',
   guest: 'Adonis/Middleware/AllowGuestOnly',
   checkBidProposedPrice: 'App/Middleware/CheckBidProposedPrice',
-  checkBidCreator: 'App/Middleware/CheckBidCreator'
+  checkBidCreator: 'App/Middleware/CheckBidCreator',
+  storeLotToRequest: 'App/Middleware/StoreLotToRequest',
+  checkUser: 'App/Middleware/Order/CheckUser',
+  checkOrderStatus: 'App/Middleware/Order/CheckOrderStatus',
+  checkLotStatus: 'App/Middleware/Order/CheckLotStatus'
 }
 
 /*
@@ -45,7 +49,7 @@ const namedMiddleware = {
 | Server Middleware
 |--------------------------------------------------------------------------
 |
-| Server levl middleware are executed even when route for a given URL is
+| Server level middleware are executed even when route for a given URL is
 | not registered. Features like `static assets` and `cors` needs better
 | control over request lifecycle.
 |

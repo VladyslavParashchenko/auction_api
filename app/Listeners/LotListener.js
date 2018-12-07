@@ -6,23 +6,6 @@ const Logger = use('Logger')
 const Lot = use('App/Models/Lot')
 
 class LotListener {
-  async purchased (lot) {
-    const bid = await
-    lot.winnerBid().fetch()
-    const lotOwner = await lot.user().fetch()
-    const bidOwner = await bid.user().fetch()
-    await
-    Mail.send('emails.lot_purchased', { lot, lotOwner, bid }, (message) => {
-      message.to(lotOwner.email)
-      message.from(Env.get('EMAIL_SENDER_EMAIL'))
-    })
-    await
-    Mail.send('emails.you_purchase_lot', { lot, bidOwner, bid }, (message) => {
-      message.to(bidOwner.email)
-      message.from(Env.get('EMAIL_SENDER_EMAIL'))
-    })
-  }
-
   async created (lotInstance) {
     const lot = {
       id: lotInstance.id,
@@ -40,16 +23,19 @@ class LotListener {
   }
 
   async foundWinner ({ lotId, jobId }) {
-    let lot
+    const lot = await Lot.find(lotId)
+    if (lot.lot_end_job_id === parseInt(jobId)) {
+      await this.closeLot(lot)
+    }
+  }
+
+  async closeLot (lot) {
     try {
-      lot = await Lot.find(lotId)
-      if (lot.lot_end_job_id !== parseInt(jobId)) {
-        return
-      }
       const bid = await lot.bids().orderBy('proposed_price', 'desc').firstOrFail()
       lot.status = 'closed'
       lot.winner_bid_id = bid.id
       await lot.save()
+      await lot.reload()
       const lotOwner = await lot.user().fetch()
       const bidOwner = await bid.user().fetch()
       await this._sendEmail({ lot, lotOwner, bid }, 'emails.lot_purchased', lotOwner.email)
@@ -61,7 +47,6 @@ class LotListener {
       }
     }
   }
-
   async started ({ lotId, jobId }) {
     const lot = await Lot.find(lotId)
     if ((lot != null) && (lot.lot_start_job_id === parseInt(jobId))) {

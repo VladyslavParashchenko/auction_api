@@ -1,3 +1,5 @@
+'use strict'
+
 class BaseValidator {
   get validateAll () {
     return true

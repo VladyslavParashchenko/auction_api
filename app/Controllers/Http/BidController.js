@@ -8,7 +8,7 @@ class BidController extends BaseController {
       const lot = await Lot.findOrFail(params.lot_id)
       const bid = await lot.bids().create(await this._bidParams(request, auth))
       await this._broadcastBid(bid)
-      response.json(bid)
+      response.send(bid)
     } catch (e) {
       this.handleException(e, response)
     }

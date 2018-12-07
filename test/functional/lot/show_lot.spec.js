@@ -2,6 +2,7 @@
 
 const { test, trait, before, after } = use('Test/Suite')('Lot - show')
 const { Route, Event, Factory, Lot, Antl } = require('../../helper/dependencyHelper.js')
+const LotListener = new (use('App/Listeners/LotListener'))()
 trait('Auth/Client')
 trait('DatabaseTransactions')
 trait('Test/ApiClient')
@@ -34,7 +35,7 @@ test('should return error, because lot belongs to other user and is not in progr
   response.assertJSONSubset({ message: Antl.formatMessage('message.ModelNotFoundException') })
 })
 
-test('should return lot with bids', async ({ client, assert }) => {
+test('should return lot with bids', async ({ client }) => {
   const lotCreator = await Factory.model('App/Models/User').create()
   const user = await Factory.model('App/Models/User').create()
   const lot = await Factory.model('App/Models/Lot').create({ user_id: lotCreator.id })
@@ -70,6 +71,26 @@ test('should return lot with bids, which serialized correct ', async ({ client, 
   })
   response.assertStatus(200)
   response.assertJSONSubset({ 'bids': serializedBids })
+})
+
+test('should return lot with bids, which serialized correct ', async ({ client }) => {
+  const user = await Factory.model('App/Models/User').create()
+  const lot = await Factory.model('App/Models/Lot').create({ user_id: user.id })
+  const otherUser = await Factory.model('App/Models/User').create()
+  await Lot.query().update({ status: 'inProcess' })
+  await Factory.model('App/Models/Bid').createMany(2, { user: otherUser, lot: lot })
+  await LotListener.foundWinner({ lotId: lot.id, jobId: lot.lot_end_job_id })
+  const order = await Factory.model('App/Models/Order').create({ lot_id: lot.id, user_id: otherUser.id })
+  const response = await client
+    .get(Route.url('lots.show', { id: lot.id }))
+    .loginVia(user)
+    .end()
+  response.assertStatus(200)
+  response.assertJSONSubset({ 'order': {
+    arrivalType: order.arrivalType,
+    status: order.status,
+    arrivalLocation: order.arrivalLocation
+  } })
 })
 
 after(async () => {

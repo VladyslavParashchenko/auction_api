@@ -5,13 +5,13 @@ class BaseController {
   handleException (exception, response) {
     switch (exception.name) {
       case 'ModelNotFoundException':
-        response.status(404).json({ message: Antl.formatMessage('message.ModelNotFoundException') })
+        response.status(404).send({ message: Antl.formatMessage('message.ModelNotFoundException') })
         break
       case 'InvalidRefreshToken':
-        response.status(401).json({ message: Antl.formatMessage('message.InvalidRefreshToken') })
+        response.status(401).send({ message: Antl.formatMessage('message.InvalidRefreshToken') })
         break
       case 'FileUploaderException':
-        response.status(400).json({ message: exception.message })
+        response.status(400).send({ message: exception.message })
         break
       default:
         throw exception

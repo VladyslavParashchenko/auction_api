@@ -2,7 +2,7 @@
 
 const BaseValidator = use('App/Validators/BaseValidator')
 
-class LotStoreValidation extends BaseValidator {
+class LotUpdateValidation extends BaseValidator {
   get rules () {
     const params = this.ctx.request.all()
     return {
@@ -13,6 +13,7 @@ class LotStoreValidation extends BaseValidator {
       image: 'file_ext:png,jpg|file_types:image|file_size:2mb'
     }
   }
+
   get sanitizationRules () {
     return {
       start_time: 'to_date',
@@ -32,4 +33,4 @@ class LotStoreValidation extends BaseValidator {
   }
 }
 
-module.exports = LotStoreValidation
+module.exports = LotUpdateValidation

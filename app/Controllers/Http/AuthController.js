@@ -42,7 +42,7 @@ class AuthController extends BaseController {
     try {
       const user = await User.findByOrFail(request.only(['email']))
       await AuthService.resetPassword(request.all().restore_password_url, user)
-      return response.json({ message: Antl.formatMessage('message.ResetLetterWasSent') })
+      return response.send({ message: Antl.formatMessage('message.ResetLetterWasSent') })
     } catch (e) {
       this.handleException(e, response)
     }
@@ -70,7 +70,7 @@ class AuthController extends BaseController {
   async logout ({ request, response, auth }) {
     try {
       await auth.revokeTokens()
-      return response.json({ message: Antl.formatMessage('message.Logout') })
+      return response.send({ message: Antl.formatMessage('message.Logout') })
     } catch (e) {
       this.handleException(e, response)
     }

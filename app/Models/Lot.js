@@ -53,6 +53,14 @@ class Lot extends Model {
   user () {
     return this.belongsTo('App/Models/User')
   }
+
+  winnerBid () {
+    return this.belongsTo('App/Models/Bid', 'winner_bid_id')
+  }
+
+  order () {
+    return this.hasOne('App/Models/Order')
+  }
 }
 
 module.exports = Lot

@@ -32,5 +32,10 @@ Route.group(() => {
     [['lots.store'], ['LotStoreValidation']],
     [['lots.update'], ['LotUpdateValidation']]
   ])).middleware(['auth'])
-  Route.post('/lots/:lot_id/bids', 'BidController.store').validator('BidStoreValidation').middleware(['auth', 'checkBidProposedPrice', 'checkBidCreator']).as('bids.store')
+  Route.post('/lots/:lot_id/order', 'OrderController.store').as('order.store').middleware(['auth', 'storeLotToRequest',
+    'checkLotStatus', 'checkUser']).validator('OrderValidation')
+  Route.put('/lots/:lot_id/order', 'OrderController.update').as('order.update').middleware(['auth', 'storeLotToRequest',
+    'checkOrderStatus']).validator('OrderUpdateValidation')
+  Route.post('/lots/:lot_id/bids', 'BidController.store').validator('BidStoreValidation').middleware(['auth',
+    'storeLotToRequest', 'checkBidProposedPrice', 'checkBidCreator']).as('bids.store')
 }).prefix('/api')

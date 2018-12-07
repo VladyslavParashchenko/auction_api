@@ -21,13 +21,13 @@ afterEach(async () => {
   queue.testMode.clear()
 })
 
-test('job should change lot status', async ({ client, assert }) => {
+test('job should change lot status and start lot', async ({ client, assert }) => {
   await LotEventsHandler.started({ jobId: lot.lot_start_job_id, lotId: lot.id })
   await lot.reload()
   assert.equal(lot.status, 'inProcess')
 })
 
-test('job should change lot status', async ({ client, assert }) => {
+test('job should change lot status and close lot', async ({ client, assert }) => {
   await LotEventsHandler.foundWinner({ jobId: lot.lot_end_job_id, lotId: lot.id })
   await lot.reload()
   const recentEmails = Mail.all()

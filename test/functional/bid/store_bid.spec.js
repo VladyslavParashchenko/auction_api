@@ -81,7 +81,7 @@ test('should run event, which is responsible for the purchase of the lot', async
     .end()
   response.assertStatus(200)
   const recentEvent = Event.pullRecent()
-  assert.equal(recentEvent.event, 'lot::foundWinner')
+  assert.equal(recentEvent.event, 'lot::closeLot')
 })
 
 after(async () => {

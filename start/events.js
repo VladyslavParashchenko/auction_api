@@ -9,6 +9,7 @@ Event.on('user::restorePassword', 'User.restorePassword')
   Lot events
  */
 Event.on('lot::created', 'LotListener.created')
+Event.on('lot::closeLot', 'LotListener.closeLot')
 Event.on('lot::updated', 'LotListener.updated')
 Event.on('lot::started', 'LotListener.started')
 Event.on('lot::foundWinner', 'LotListener.foundWinner')

@@ -2,20 +2,19 @@
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
-const Antl = use('Antl')
+
 const Lot = use('App/Models/Lot')
-class CheckBidProposedPrice {
+const Antl = use('Antl')
+class StoreLotToRequest {
   /**
    * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Function} next
    */
-  async handle ({ request, params, response }, next) {
+  async handle ({ response, request, params, auth }, next) {
     try {
       const lot = await Lot.findOrFail(params.lot_id)
-      if (lot.current_price > request.all().proposed_price) {
-        return response.status(400).send({ message: Antl.formatMessage('message.ProposedPriceError') })
-      }
+      request.lot = lot
     } catch (e) {
       return response.status(404).send({ message: Antl.formatMessage('message.LotNotFound') })
     }
@@ -23,4 +22,4 @@ class CheckBidProposedPrice {
   }
 }
 
-module.exports = CheckBidProposedPrice
+module.exports = StoreLotToRequest

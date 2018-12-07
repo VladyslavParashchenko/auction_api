@@ -14,10 +14,10 @@ class CheckBidCreator {
     try {
       const lot = await Lot.findOrFail(params.lot_id)
       if (lot.user_id === auth.user.id) {
-        return response.status(403).json({ message: Antl.formatMessage('message.YouCanNotAddBidForYourOwnLot') })
+        return response.status(403).send({ message: Antl.formatMessage('message.YouCanNotAddBidForYourOwnLot') })
       }
     } catch (e) {
-      return response.status(404).json({ message: Antl.formatMessage('message.LotNotFound') })
+      return response.status(404).send({ message: Antl.formatMessage('message.LotNotFound') })
     }
 
     await next()

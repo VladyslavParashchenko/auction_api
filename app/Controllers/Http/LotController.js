@@ -12,7 +12,7 @@ class LotController extends BaseController {
       lot.fill(this._lotParams(request))
       lot.image = await this.saveFile(request, 'image')
       await auth.user.lots().save(lot)
-      return response.json(lot)
+      return response.send(lot)
     } catch (e) {
       this.handleException(e, response)
     }
@@ -26,7 +26,7 @@ class LotController extends BaseController {
       lot.image = filePath || lot.image
       await lot.save()
       Event.fire('lot::updated', { lotId: lot.id, lotUpdatedField: this._lotParams(request) })
-      return response.json(lot)
+      return response.send(lot)
     } catch (e) {
       this.handleException(e, response)
     }
@@ -36,7 +36,7 @@ class LotController extends BaseController {
     try {
       const lot = await auth.user.lots().pending().where('id', params.id).firstOrFail()
       await lot.delete()
-      return response.json(lot)
+      return response.send(lot)
     } catch (e) {
       this.handleException(e, response)
     }
@@ -44,10 +44,10 @@ class LotController extends BaseController {
 
   async show ({ response, request, auth, params }) {
     try {
-      const lot = await Lot.query().lotAvailableToUser({ userId: auth.user.id, lotId: params.id }).with('bids').firstOrFail()
+      const lot = await Lot.query().lotAvailableToUser({ userId: auth.user.id, lotId: params.id }).with('bids').with('order').firstOrFail()
       let serializedLot = lot.toJSON()
       serializedLot = BidPostSerializer.markBids(serializedLot, auth.user.id)
-      return response.json(serializedLot)
+      return response.send(serializedLot)
     } catch (e) {
       this.handleException(e, response)
     }
@@ -57,7 +57,7 @@ class LotController extends BaseController {
     try {
       const lots = await Lot.query().filter({ filter: request.all(), userId: auth.user.id })
         .paginate(...this.paginationParams(request.all()))
-      return response.status(200).json(lots)
+      return response.status(200).send(lots)
     } catch (e) {
       this.handleException(e, response)
     }
